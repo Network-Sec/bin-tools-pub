@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Note: This script was part of a tutorial and shows and example implementation
+# Note: This script was part of a tutorial and shows an example implementation
 # using a microservices approach and two of my custom tools - along with other
 # commonly used automation bash tools, often used in Ethical Hacking and Bug Bounty.
 
