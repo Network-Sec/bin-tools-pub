@@ -81,7 +81,6 @@ change_quotes(base)
 
 # - escaped quotes
 escape_quotes(base)
-change_double_quotes(base)
 escape_quotes(change_quotes(base))
 
 # - url-encode
