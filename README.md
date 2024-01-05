@@ -69,7 +69,8 @@ You should import this as a lib and could then utilize individual functions, or 
 encode_all_formats('"><svg onload=myXSStest>...')
 ```
 
-which will process your string into a variety of encodings and other things practical for burp-suiting around...
+which will process your string into a variety of encodings and other things practical for burp-suiting around...  
+It's worth noting, that lots of encodings / conversion won't make much sense, unless there's a specific scenario, meaning a certain tech stack that will allow to use some type of encoding as a bypass or otherwise valuable addition to your exploit. fuzzlib in that regard is also a "lazy solution", meaning: Throwing spaghetti at the wall, see what sticks. 
 ```python
 # Some of the functions that `encode_all_formats()` calls..
 
