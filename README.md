@@ -3,7 +3,7 @@ Tools I created as FOSS.
 
 
 ## htmlq.py
-
+To see examples how I use `htmlq` and `jsonq` - see the script: `cve_scrape.sh`.
 ```bash
 $ htmlq.py -h
 usage: htmlq.py [-h] [-j] -l LOOP -s SELECTORS [-t] [-o] [-u URLROOT]
