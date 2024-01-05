@@ -56,3 +56,39 @@ options:
 |                |                      |                                          | guide/vulnerability/CVE-2023-28252                           |
 +----------------+----------------------+------------------------------------------+--------------------------------------------------------------+
 ```
+## fuzzlib.py
+fuzzlib.py - encoding and fuzzing toolkit
+
+- The script / lib is intended to be imported, still there's a main function at the end with an example implementation, meaning you can use it as-is / standalone
+- I made this lib for usage as cli tool (quickly do some encoding stuff) as well as larger projects (e.g. XSS fuzzer)
+- Both lib and fuzzer below are made async for best performance
+
+### Usage Example
+You should import this as a lib and could then utilize individual functions, or call
+```python
+encode_all_formats('"><svg onload=myXSStest>...')
+```
+
+which will process your string into a variety on encodings and other things practical for burp-suiting around...
+```python
+# Some of the functions that `encode_all_formats()` calls..
+
+# - double-quote to single-quote variants
+change_double_quotes(base)
+
+# - quotes to ticks
+change_quotes(base)
+
+# - escaped quotes
+escape_quotes(base)
+change_double_quotes(base)
+escape_quotes(change_quotes(base))
+
+# - url-encode
+url_encode(base)
+    
+# - html-entity-encoded
+html_encode_key(base)
+
+# ...and many more - see source code for full list
+```
