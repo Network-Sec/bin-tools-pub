@@ -69,7 +69,7 @@ You should import this as a lib and could then utilize individual functions, or 
 encode_all_formats('"><svg onload=myXSStest>...')
 ```
 
-which will process your string into a variety on encodings and other things practical for burp-suiting around...
+which will process your string into a variety of encodings and other things practical for burp-suiting around...
 ```python
 # Some of the functions that `encode_all_formats()` calls..
 
