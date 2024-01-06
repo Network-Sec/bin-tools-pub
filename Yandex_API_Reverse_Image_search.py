@@ -3,6 +3,7 @@
 import requests
 from datetime import datetime
 import json
+import os
 
 # Query should be a public url with the image to reverse search
 query = ""
