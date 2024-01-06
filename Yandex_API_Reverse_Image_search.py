@@ -4,6 +4,7 @@ import requests
 from datetime import datetime
 import json
 import os
+import subprocess
 
 # Query should be a public url with the image to reverse search
 query = ""
@@ -13,6 +14,7 @@ folder = "/tmp/img/"
 # SerpAPI key
 serpAPIkey = ""
 
+# Some image pathes are problematic on output, see alternative below using wget
 def download_image(image_url, folder_path):
     try:
         response = requests.get(image_url, stream=True)
@@ -25,6 +27,19 @@ def download_image(image_url, folder_path):
     except Exception as e:
         print(f"An error occurred: {e}")
     return False
+
+def download_image_with_wget(image_url, folder_path):
+    # Ensure the folder exists
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
+    # Construct the wget command
+    command = f"wget -P {folder_path} --content-disposition -e robots=off --trust-server-names -nc --max-redirect=3 '{image_url}'"
+    
+    try:
+        subprocess.run(command, shell=True, check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"An error occurred while downloading {image_url}: {e}")
 
 def yandex_image_search(api_key, query, max_pages):
     base_url = "https://serpapi.com/search.json"
@@ -53,6 +68,7 @@ def yandex_image_search(api_key, query, max_pages):
             print("Width", image_result["original_image"]["width"], " Height", image_result["original_image"]["height"])
             imgurl = image_result["original_image"]["link"]
             print(imgurl)
-            download_image(imgurl, folder)
+            download_image_with_wget(image_url, folder)
+            # download_image(imgurl, folder)
                   
 yandex_image_search(serpAPIkey, query, maxResultPages)
