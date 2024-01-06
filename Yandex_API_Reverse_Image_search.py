@@ -3,7 +3,7 @@
 import requests
 from datetime import datetime
 import json
-import os
+import os, re 
 import subprocess
 
 # Query should be a public url with the image to reverse search
@@ -14,7 +14,21 @@ folder = "/tmp/img/"
 # SerpAPI key
 serpAPIkey = ""
 
-# Some image pathes are problematic on output, see alternative below using wget
+def sanitize_filename(title, url):
+    # Use a regular expression to find the file extension
+    extension_match = re.search(r"\.(jpg|jpeg|png|gif|bmp|webp|img|svg|tiff)$", url, re.IGNORECASE)
+    extension = extension_match.group(0) if extension_match else '.jpg'  # Default to .jpg if no extension found
+
+    # Replace spaces and illegal characters in the title
+    sanitized_title = re.sub(r'[^\w\s-]', '', title.replace(" ", "_"))
+
+    # Limit the length of the filename
+    max_length = 200
+    if len(sanitized_title) > max_length:
+        sanitized_title = sanitized_title[:max_length]
+
+    return sanitized_title + extension
+
 def download_image(image_url, folder_path):
     try:
         response = requests.get(image_url, stream=True)
@@ -28,16 +42,17 @@ def download_image(image_url, folder_path):
         print(f"An error occurred: {e}")
     return False
 
-def download_image_with_wget(image_url, folder_path):
-    # Ensure the folder exists
+def download_image_with_wget(image_url, folder_path, title):
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
 
-    # Construct the wget command
-    command = f"wget -q -P {folder_path} --content-disposition -e robots=off --trust-server-names -nc --max-redirect=3 {image_url}"
+    filename = sanitize_filename(title, image_url)
+    file_path = os.path.join(folder_path, filename)
+
+    command = f"wget -q --timeout=5 -O \"{file_path}\" --content-disposition -e robots=off --trust-server-names -nc --max-redirect=5 {image_url}" 
     
     try:
-        subprocess.run(command, shell=True, check=True)
+        subprocess.run(command, shell=True)
     except subprocess.CalledProcessError as e:
         print(f"An error occurred while downloading {image_url}: {e}")
 
@@ -64,11 +79,16 @@ def yandex_image_search(api_key, query, max_pages):
             f.write(json.dumps(data, indent=4))
 
         for image_result in data["image_results"]:
-            print(image_result["title"])
+            title = image_result["title"]
+            print("[+]", title)
+
             print("Width", image_result["original_image"]["width"], " Height", image_result["original_image"]["height"])
+
             imgurl = image_result["original_image"]["link"]
             print(imgurl)
-            download_image_with_wget(imgurl, folder)
+            print()
+            
+            download_image_with_wget(imgurl, folder, title)
             # download_image(imgurl, folder)
                   
 yandex_image_search(serpAPIkey, query, maxResultPages)
