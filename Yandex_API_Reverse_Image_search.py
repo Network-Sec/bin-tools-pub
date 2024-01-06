@@ -16,7 +16,7 @@ serpAPIkey = ""
 
 def sanitize_filename(title, url):
     # Use a regular expression to find the file extension
-    extension_match = re.search(r"\.(jpg|jpeg|png|gif|bmp|webp|img|svg|tiff)$", url, re.IGNORECASE)
+    extension_match = re.search(r"\.(jpg|jpeg|png|gif|bmp|webp|img|svg|tiff)", url, re.IGNORECASE)
     extension = extension_match.group(0) if extension_match else '.jpg'  # Default to .jpg if no extension found
 
     # Replace spaces and illegal characters in the title
