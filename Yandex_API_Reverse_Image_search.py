@@ -81,17 +81,18 @@ def yandex_image_search(api_key, query, max_pages):
         with open("yand.json" + now.strftime("%Y-%m-%d_%H-%M-%S"), "w") as f:
             f.write(json.dumps(data, indent=4))
 
-        for image_result in data["image_results"]:
-            title = image_result["title"]
-            print("[+]", title)
+        if "image_results" in data:
+            for image_result in data["image_results"]:
+                title = image_result["title"]
+                print("[+]", title)
 
-            print("Width", image_result["original_image"]["width"], " Height", image_result["original_image"]["height"])
+                print("Width", image_result["original_image"]["width"], " Height", image_result["original_image"]["height"])
 
-            imgurl = image_result["original_image"]["link"]
-            print(imgurl)
-            print()
-            
-            download_image_with_wget(imgurl, folder, title)
-            # download_image(imgurl, folder)
+                imgurl = image_result["original_image"]["link"]
+                print(imgurl)
+                print()
+                
+                download_image_with_wget(imgurl, folder, title)
+                # download_image(imgurl, folder)
                   
 yandex_image_search(serpAPIkey, query, maxResultPages)
