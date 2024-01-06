@@ -68,7 +68,7 @@ def yandex_image_search(api_key, query, max_pages):
             print("Width", image_result["original_image"]["width"], " Height", image_result["original_image"]["height"])
             imgurl = image_result["original_image"]["link"]
             print(imgurl)
-            download_image_with_wget(image_url, folder)
+            download_image_with_wget(imgurl, folder)
             # download_image(imgurl, folder)
                   
 yandex_image_search(serpAPIkey, query, maxResultPages)
