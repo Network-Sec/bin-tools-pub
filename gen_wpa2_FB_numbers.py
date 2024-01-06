@@ -7,15 +7,6 @@
 # It generates numbers comprised of 8,12,16,20 digits up till
 # a file size of 10 Gigabytes - you can adjust that on the bottom. 
 
-#!/usr/bin/env python3
-
-# Modern F!B routers by default have long numbers as WPA keys
-# These are hard to tackle, even with modern GPUs. Someone
-# noticed that within these default keys, no 3 consecutive
-# digits are the same, so here's at least a valid shot at it. 
-# It generates numbers comprised of 8,12,16,20 digits up till
-# a file size of 10 Gigabytes - you can adjust that on the bottom. 
-
 import random
 import time
 
