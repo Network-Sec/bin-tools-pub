@@ -34,7 +34,7 @@ def download_image_with_wget(image_url, folder_path):
         os.makedirs(folder_path)
 
     # Construct the wget command
-    command = f"wget -q -P {folder_path} --content-disposition -e robots=off --trust-server-names -nc --max-redirect=3 '{image_url}'"
+    command = f"wget -q -P {folder_path} --content-disposition -e robots=off --trust-server-names -nc --max-redirect=3 {image_url}"
     
     try:
         subprocess.run(command, shell=True, check=True)
