@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# Some files will be 0 bytes - this is often Instagram, cause it delivered temporary urls to the search engine
+# not much we can do about it... 
+
 import requests
 from datetime import datetime
 import json
