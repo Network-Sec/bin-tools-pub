@@ -49,7 +49,7 @@ def download_image_with_wget(image_url, folder_path, title):
     filename = sanitize_filename(title, image_url)
     file_path = os.path.join(folder_path, filename)
 
-    command = f"timeout -k 5 5 wget -q --timeout=5 -O \"{file_path}\" --content-disposition -e robots=off --trust-server-names -nc --max-redirect=5 {image_url}" 
+    command = f"timeout -k 25 25 wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 0 -q -O \"{file_path}\" --content-disposition -e robots=off --trust-server-names -nc --max-redirect=5 {image_url}" 
     
     try:
         subprocess.run(command, shell=True)
