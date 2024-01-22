@@ -94,7 +94,7 @@ html_encode_key(base)
 ```
 
 ## Redteam Homoglyph Generator
-Including detection check (confusables.is_dangerous()). The python script is Security Plus content...
+Including detection check (confusables.is_dangerous()). 
 
 These days, Homoglyph attacks are among the top, bread & butter TTP of any APT. However, from the Blueteam side it's also recognized and (should be) implemented as defense in depth, e.g. all major browsers have built-in methods to counteract this type of attack. Yet, especially punny code conversion may be safe in browser (given that the user validates the link again, after clicking it, not everybody will) - but not safe in MUA, which might display the confusable.
 
