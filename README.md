@@ -92,3 +92,49 @@ html_encode_key(base)
 
 # ...and many more - see source code for full list
 ```
+
+## Redteam Homoglyph Generator
+Including detection check (confusables.is_dangerous()). The python script is Security Plus content...
+
+These days, Homoglyph attacks are among the top, bread & butter TTP of any APT. However, from the Blueteam side it's also recognized and (should be) implemented as defense in depth, e.g. all major browsers have built-in methods to counteract this type of attack. Yet, especially punny code conversion may be safe in browser (given that the user validates the link again, after clicking it, not everybody will) - but not safe in MUA, which might display the confusable.
+
+An easy evasion of the browser punnycode conversion may be use of a long link with many params and some type of (open) redirect, so it won't be visible immediately - but that's just a guess at the moment, I haven't put a lot of thought and effort into this topic yet, I'm sure there's much more knowledge to be discovered.
+
+I see Email addresses as the most dangerous vector, cause an attacker might be able to produce an exact representation of the address of a colleague, friend, business partner, high reputation address like microsoft.com etc.
+
+We know countless, real attacks using this technique at some point.
+
+```bash
+$ python3 hggenerator.py --codebox --homoglyphs --max_homoglyphs 2  "network-sec.de"
++------------+-----------------+--------------+
+|    Method  |     Variant     | Is Dangerous |
++------------+-----------------+--------------+
+| homoglyphs |  𝐧etwork-sec.de |      No      |
+|            |  n℮twork-sec.de |      No      |
+|            |  ne𝐭work-sec.de |      No      |
+|            |  netɯork-sec.de |      No      |
+|            |  netwᴏrk-sec.de |      No      |
+|            |  netwoꭇk-sec.de |      No      |
+|            |  networ𝐤-sec.de |      No      |
+|            |  network˗sec.de |      No      |
+|            |  network-ƽec.de |      No      |
+|            |  network-s℮c.de |      No      |
+|            |  network-seᴄ.de |      No      |
+|            |  network-sec․de |      No      |
+|            |  network-sec.ⅆe |      No      |
+|            |  network-sec.d℮ |      No      |
+| codebox    |  ոetwork-sec.de |     Yes      |
+|            |  ռetwork-sec.de |     Yes      |
+|            |  nеtwork-sec.de |     Yes      |
+|            |  nҽtwork-sec.de |     Yes      |
+|            | neｔwork-sec.de |      No      |
+|            |  ne𝐭work-sec.de |      No      |
+|            |  netɯork-sec.de |      No      |
+|            |  netѡork-sec.de |     Yes      |
+|            |  netwoгk-sec.de |     Yes      |
+|            |  netwoᴦk-sec.de |     Yes      |
+|            | networｋ-sec.de |      No      |
+|            |  networ𝐤-sec.de |      No      |
+|            |  network˗sec.de |      No      |
++------------+-----------------+--------------+
+```
