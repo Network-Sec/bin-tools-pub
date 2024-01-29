@@ -6,6 +6,7 @@
 
 import argparse
 from aiohttp import web, ClientSession
+from aiohttp_socks import ProxyConnector
 from urllib.parse import urlparse, urlunparse
 import hashlib
 
@@ -16,14 +17,13 @@ LISTEN_PORT = 13131
 parser = argparse.ArgumentParser(description="LFI Proxy Tool")
 parser.add_argument("--lfi-path", type=str, required=True, help="LFI base path to append")
 parser.add_argument("--target-url", type=str, required=True, help="Target URL to forward requests to")
+parser.add_argument("--proxy", type=str, default=None, help="Optional forward proxy (HTTP or SOCKS)")
 
 # Parse arguments
 args = parser.parse_args()
 
 def modify_headers(headers):
     # Example header modification logic
-    # Modify or add headers based on your requirement
-    # For example, adding a checksum header:
     if "Some-Header" in headers:
         param = headers["Some-Header"]
         headers["Checksum"] = hashlib.md5(param.encode('utf-8')).hexdigest()
@@ -37,11 +37,14 @@ async def handle_request(request):
                                        parsed_target_url.params, parsed_target_url.query,
                                        parsed_target_url.fragment))
 
-    # Modify headers, if you want to
-    modified_headers = headers # modify_headers(dict(request.headers))
+    # Create a session with proxy if specified
+    connector = ProxyConnector.from_url(args.proxy) if args.proxy else None
+
+    # Modify headers
+    modified_headers = modify_headers(dict(request.headers))
 
     # Forward the request to the target URL with modified headers
-    async with ClientSession() as session:
+    async with ClientSession(connector=connector) as session:
         async with session.request(request.method, target_url_with_port,
                                    headers=modified_headers, data=await request.read()) as resp:
             # Log the request and response
@@ -56,4 +59,5 @@ app.router.add_route('*', '/{tail:.*}', handle_request)
 
 # Run the web server on the fixed port
 web.run_app(app, port=LISTEN_PORT)
+
 
