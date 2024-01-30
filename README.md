@@ -151,6 +151,8 @@ https://docs.python.org/3/library/cmd.html
 So much more fun than editing requests in Burp or cUrl.  
 
 ### Python Proxies
-People these days... proxy everything over Burp anyway - this is an alternative and especially useful when you want keep the `Path Traversal` of the URL intact, maybe on top want to modify the requests, but cannot afford BurpPro. You could still proxy over Burp, on your way in or out. 
+People these days... proxy everything over Burp anyway - this is an alternative and especially useful when you want keep the `Path Traversal` of the URL intact, maybe on top want to modify the requests, while you run `feroxbuster` over a `SOCKS` on the way out, but cannot afford BurpPro. 
+
+You could of course still proxy over Burp, on your way in or out of this little custom tool. 
 
 [lfi_proxy.py](lfi_proxy.py)
