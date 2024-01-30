@@ -147,10 +147,10 @@ That said, it's always a time- and life-saver to have some templates ready. Here
 ### Python Cmd library - XXE / LFI pseudoshell
 https://docs.python.org/3/library/cmd.html   
 
-[](xxe-lfi-cmd_shell.py)  
+[xxe-lfi-cmd_shell.py](xxe-lfi-cmd_shell.py)  
 So much more fun than editing requests in Burp or cUrl.  
 
 ### Python Proxies
 People these days... proxy everything over Burp anyway - this is an alternative and especially useful when you want keep the `Path Traversal` of the URL intact, maybe on top want to modify the requests, but cannot afford BurpPro. You could still proxy over Burp, on your way in or out. 
 
-[](lfi_proxy.py)
+[lfi_proxy.py](lfi_proxy.py)
