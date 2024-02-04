@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-# Spider for Inputs in website - see README
-
 import sys
 from tabnanny import verbose
 import scrapy
@@ -30,9 +28,7 @@ class FormSpider(scrapy.Spider):
         self.results = {}
         self.domain = urlparse(start_url).netloc
         self.verbose = verbose
-        if not verbose:
-            logging.basicConfig(stream=sys.stderr, level=logging.ERROR, format='%(levelname)s: %(message)s')
-        else:
+        if verbose:
             logging.basicConfig(stream=sys.stdout, level=logging.INFO, format='%(levelname)s: %(message)s')
 
         if self.test_protocols:
@@ -176,6 +172,7 @@ if __name__ == "__main__":
         'USER_AGENT': 'Mozilla/5.0 (compatible; MyFormSpider/1.0)',
         # Adjust logging level based on the verbose argument
         'LOG_LEVEL': 'INFO' if args.verbose else 'ERROR',
+        'LOG_ENABLED': args.verbose,  
     })
     
     process.crawl(FormSpider, start_url=args.start_url, show_method=args.show_method, show_status=args.show_status, output_json=args.json, test_protocols=(1 - args.stick_to_input), verbose=args.verbose)
