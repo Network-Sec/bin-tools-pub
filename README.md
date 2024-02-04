@@ -151,3 +151,58 @@ People these days... proxy everything over Burp anyway - this is an alternative 
 You could of course still proxy over Burp, on your way in or out of this little custom tool. 
 
 [lfi_proxy.py](lfi_proxy.py)
+
+## input_spider.py
+As `scrapy` with logging results in more output than wanted / needed, you need to add the `/dev/null` redirections for stderr. 
+
+### What it does
+- Spider a `Domain` (or IP, URL)
+- Find inputs
+- Output URL with input params for further test-automation
+
+### Output only the URLs with params
+Note that random values are added, as most forms wont submit without values. The output always contains a clean version as well. Some params have default values, this will come in a future version. From experience I know, in `Pentesting` inputs, the `default values` can become very important, without you often cannot submit succesfully. 
+
+```bash
+$ input_spider.py webhistory.info 2>/dev/null
+https://webhistory.info?searchDomain=ZDlZzz4W&domain-regex=pomq0iLK&setcookie=Du6Sq3tG&server=mbUsZW82&individualResults=mQzzTky5&special-headers=VdapK4Gx&searchURL=K09u1A3w&searchServer=kSrDw7vc&ignore-server-case=xcvEef1q&startDate=GFGi8hcd
+https://webhistory.info?searchDomain=&domain-regex=&setcookie=&server=&individualResults=&special-headers=&searchURL=&searchServer=&ignore-server-case=&startDate=
+```
+
+### JSON output
+```bash
+$ input_spider.py --json  webhistory.info 2>/dev/null
+{
+    "webhistory.info": [
+        {
+            "method": "GET",
+            "status_code": 200,
+            "domain": "webhistory.info",
+            "protocol": "https",
+            "url_with_values": "https://webhistory.info?searchDomain=RB5aqUvY&domain-regex=DB5Z87tE&setcookie=Cpx4A0yA&server=t8NpXz83&individualResults=tDhA5mHN&special-headers=gD6jGq0J&searchURL=8tL35VAi&searchServer=99nbOUNn&ignore-server-case=DC0pfrVW&startDate=BRradGTH",
+            "url_without_values": "https://webhistory.info?searchDomain=&domain-regex=&setcookie=&server=&individualResults=&special-headers=&searchURL=&searchServer=&ignore-server-case=&startDate=",
+            "params": [
+                "searchDomain",
+                "domain-regex",
+                "setcookie",
+                "server",
+                "individualResults",
+                "special-headers",
+                "searchURL",
+                "searchServer",
+                "ignore-server-case",
+                "startDate"
+            ]
+        }
+    ]
+}
+```
+
+### Show Method and Status Code
+of the resulting URL
+```bash
+$ input_spider.py --show-method --show-status  webhistory.info 2>/dev/null
+[GET] 200 https://webhistory.info?searchDomain=UpOLiMwS&domain-regex=cRdkv5IH&setcookie=U4hL68A7&server=OtiKkP9X&individualResults=Fnwsskqz&special-headers=LdqOVU6n&searchURL=ndKg0wFC&searchServer=SPzIDSfY&ignore-server-case=IzjVcwiL&startDate=KgTCAVxe
+[GET] 200 https://webhistory.info?searchDomain=&domain-regex=&setcookie=&server=&individualResults=&special-headers=&searchURL=&searchServer=&ignore-server-case=&startDate=
+```
+
