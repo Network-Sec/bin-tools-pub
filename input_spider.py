@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# Note: Script isn't 100% yet... wait a week or two, if you care
+
 import sys
 from tabnanny import verbose
 import scrapy
@@ -17,10 +19,11 @@ import json
 
 class FormSpider(scrapy.Spider):
     name = 'form_spider'
-
+    results = {}
+    
     def __init__(self, start_url, show_method=True, show_status=False, output_json=False, test_protocols=True, verbose=False, *args, **kwargs):
         super(FormSpider, self).__init__(*args, **kwargs)
-        self.start_urls = [start_url]
+        self.start_urls = []
         self.show_method = show_method or output_json
         self.show_status = show_status or output_json
         self.output_json = output_json
@@ -33,23 +36,59 @@ class FormSpider(scrapy.Spider):
 
         if self.test_protocols:
             self.start_urls = self.perform_initial_tests(start_url)
+        else:
+            self.start_urls.append(self.start_url)
+        print(self.start_urls)
 
     def perform_initial_tests(self, start_url):
         available_urls = []
-        ip_address, resolved_hostname = self.resolve_host(start_url)
 
-        if ip_address:
-            available_urls += self.test_host_availability(ip_address, allow_insecure_ssl=True)
-        if resolved_hostname and resolved_hostname != self.domain:
-            available_urls += self.test_host_availability(resolved_hostname, allow_insecure_ssl=True)
+        # Determine if the start_url is an IP address
+        is_ip = self.is_ip_address(start_url)
+        scheme = urlparse(start_url).scheme
+        hostname_or_ip = urlparse(start_url).hostname if scheme else start_url
 
-        # Add original URL if it has a scheme, or test both http and https otherwise
-        if urlparse(start_url).scheme:
-            available_urls.append(start_url)
+        # Prepare URLs for testing based on whether a scheme is present
+        if not scheme:
+            base_urls = [f"http://{hostname_or_ip}", f"https://{hostname_or_ip}"]
         else:
-            available_urls += self.test_host_availability(start_url, allow_insecure_ssl=True)
+            base_urls = [start_url]
 
-        return list(set(available_urls))  # Remove duplicates
+        # Test each base URL and follow redirects
+        for base_url in base_urls:
+            final_urls = self.test_host_availability(base_url)
+            if final_urls:
+                available_urls += final_urls
+
+        # Additional testing if input is an IP address
+        if is_ip:
+            resolved_hostname = ""
+            try:
+                resolved_hostname, _, _ = socket.gethostbyaddr(hostname_or_ip)
+                resolved_hostname = resolved_hostname.split('.')[-2] + '.' + resolved_hostname.split('.')[-1]
+                if verbose: logging.info(f"Reverse lookup of {hostname_or_ip}: {resolved_hostname}")            
+            except socket.herror:
+                if verbose: logging.info(f"No reverse lookup found for IP: {hostname_or_ip}")
+                
+            if resolved_hostname:
+                for protocol in ['http', 'https']:
+                    final_urls = self.test_host_availability(f"{protocol}://{resolved_hostname}")
+                    if final_urls:
+                        available_urls += final_urls
+
+        return list(set(available_urls))
+    
+    def closed(self, reason):
+        if self.output_json:
+            print(json.dumps(self.results, indent=4))
+
+    @staticmethod
+    def is_ip_address(string):
+        try:
+            socket.inet_aton(string)
+            return True
+        except socket.error:
+            return False
 
     @classmethod
     def test_host_availability(cls, url, allow_insecure_ssl=True, preferred_protocols=['http', 'https']):
@@ -60,8 +99,8 @@ class FormSpider(scrapy.Spider):
             try:
                 response = requests.get(test_url, headers=headers, allow_redirects=True, verify=allow_insecure_ssl)
                 if response.status_code == 200:
-                    logging.info(f"Available: {test_url}")
-                    available_urls.append(test_url)
+                    logging.info(f"Available: {response.url}")
+                    available_urls.append(response.url)
                 else:
                     logging.info(f"Status {response.status_code} for: {test_url}")
             except requests.RequestException as e:
@@ -88,50 +127,51 @@ class FormSpider(scrapy.Spider):
     def parse(self, response):
         domain = urlparse(response.url).netloc
         if self.output_json and domain not in self.results:
-            self.results[domain] = []
+            self.results[domain] = {'urls': [], 'forms': []}
 
+        # Collect all links before yielding requests or outputting
+        all_urls = []
         links = response.css("a::attr(href)").getall()
         for link in links:
             next_page = response.urljoin(link)
+            all_urls.append(next_page)  # Collect for later output
             yield scrapy.Request(next_page, callback=self.parse)
 
+        # Process and collect forms
         forms = response.css("form") or response.xpath("//form")
         for form in forms:
             action, method, inputs = self.extract_form_data(form, response)
             form_url = urljoin(response.url, action)
             method = method.upper()
 
-            # URLs with and without random values
             query_string = urlencode(inputs)
             query_string_no_values = urlencode({k: '' for k in inputs.keys()})
             
             url_and_values = f"{form_url}?{query_string}"
             url_no_values = f"{form_url}?{query_string_no_values}"
 
-            if self.show_status:
-                status_code = self.test_url(url_and_values, method, inputs)
-                prefix = f"[{method}] {status_code}"
-            else:
-                prefix = f"[{method}]" if self.show_method else ""
-
+            status_code = self.test_url(url_and_values, method, inputs) if self.show_status else None
+            prefix = f"[{method}] {status_code}" if self.show_status else (f"[{method}]" if self.show_method else "")
             output_with_values = f"{prefix} {url_and_values}" if prefix else url_and_values
             output_without_values = f"{prefix} {url_no_values}" if prefix else url_no_values
 
-            if not self.output_json:
-                print(output_with_values)
-                print(output_without_values)
-            else:
-                input_list = [name for name, value in inputs.items()]
-  
-                self.results[domain].append({
+            # Append form data to results for JSON output
+            if self.output_json:
+                self.results[domain]['forms'].append({
                     'method': method,
                     'status_code': status_code,
-                    'domain': domain,
-                    'protocol': urlparse(url_no_values).scheme,
                     'url_with_values': url_and_values,
                     'url_without_values': url_no_values,
-                    'params': input_list
+                    'params': [name for name, value in inputs.items()]
                 })
+
+        # Include all found URLs in both regular and JSON output
+        all_urls.extend([url_and_values, url_no_values])  # Add form URLs to the list
+        if not self.output_json:
+            for url in all_urls:
+                print(url)
+        else:
+            self.results[domain]['urls'].extend(all_urls)
 
     def closed(self, reason):
         if self.output_json:
