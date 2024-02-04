@@ -155,10 +155,29 @@ You could of course still proxy over Burp, on your way in or out of this little 
 ## input_spider.py
 As `scrapy` with logging results in more output than wanted / needed, you need to add the `/dev/null` redirections for stderr. 
 
+```bash
+usage: input_spider.py [-h] [--show-method] [--show-status] [--json] [--stick-to-input] [-v] start_url
+
+Spider a website and list all URLs with forms.
+
+positional arguments:
+  start_url         The URL to start spidering from.
+
+options:
+  -h, --help        show this help message and exit
+  --show-method     Show the HTTP method (GET/POST) before URLs.
+  --show-status     Show the HTTP status code for each URL.
+  --json            Output results in JSON format.
+  --stick-to-input  Skip testing availability for HTTP/HTTPS protocols and IP/Hostname resolution.
+  -v, --verbose     Enable verbose output.
+```
+
 ### What it does
 - Spider a `Domain` (or IP, URL)
 - Find inputs
 - Output URL with input params for further test-automation
+- Test http / https availability
+- Make IP <-> Hostname resolution and test both 
 
 ### Output only the URLs with params
 Note that random values are added, as most forms wont submit without values. The output always contains a clean version as well. Some params have default values, this will come in a future version. From experience I know, in `Pentesting` inputs, the `default values` can become very important, without you often cannot submit succesfully. 
