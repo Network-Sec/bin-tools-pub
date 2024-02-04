@@ -153,9 +153,7 @@ You could of course still proxy over Burp, on your way in or out of this little 
 [lfi_proxy.py](lfi_proxy.py)
 
 ## input_spider.py
-As `scrapy` with logging results in more output than wanted / needed, you need to add the `/dev/null` redirections for stderr. 
-
-```bash
+```
 usage: input_spider.py [-h] [--show-method] [--show-status] [--json] [--stick-to-input] [-v] start_url
 
 Spider a website and list all URLs with forms.
@@ -183,14 +181,14 @@ options:
 Note that random values are added, as most forms wont submit without values. The output always contains a clean version as well. Some params have default values, this will come in a future version. From experience I know, in `Pentesting` inputs, the `default values` can become very important, without you often cannot submit succesfully. 
 
 ```bash
-$ input_spider.py webhistory.info 2>/dev/null
+$ input_spider.py webhistory.info
 https://webhistory.info?searchDomain=ZDlZzz4W&domain-regex=pomq0iLK&setcookie=Du6Sq3tG&server=mbUsZW82&individualResults=mQzzTky5&special-headers=VdapK4Gx&searchURL=K09u1A3w&searchServer=kSrDw7vc&ignore-server-case=xcvEef1q&startDate=GFGi8hcd
 https://webhistory.info?searchDomain=&domain-regex=&setcookie=&server=&individualResults=&special-headers=&searchURL=&searchServer=&ignore-server-case=&startDate=
 ```
 
 ### JSON output
 ```bash
-$ input_spider.py --json  webhistory.info 2>/dev/null
+$ input_spider.py --json  webhistory.info
 {
     "webhistory.info": [
         {
@@ -220,7 +218,7 @@ $ input_spider.py --json  webhistory.info 2>/dev/null
 ### Show Method and Status Code
 of the resulting URL
 ```bash
-$ input_spider.py --show-method --show-status  webhistory.info 2>/dev/null
+$ input_spider.py --show-method --show-status  webhistory.info
 [GET] 200 https://webhistory.info?searchDomain=UpOLiMwS&domain-regex=cRdkv5IH&setcookie=U4hL68A7&server=OtiKkP9X&individualResults=Fnwsskqz&special-headers=LdqOVU6n&searchURL=ndKg0wFC&searchServer=SPzIDSfY&ignore-server-case=IzjVcwiL&startDate=KgTCAVxe
 [GET] 200 https://webhistory.info?searchDomain=&domain-regex=&setcookie=&server=&individualResults=&special-headers=&searchURL=&searchServer=&ignore-server-case=&startDate=
 ```
