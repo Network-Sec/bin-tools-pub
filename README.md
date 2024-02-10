@@ -223,3 +223,7 @@ $ input_spider.py --show-method --show-status  webhistory.info
 [GET] 200 https://webhistory.info?searchDomain=&domain-regex=&setcookie=&server=&individualResults=&special-headers=&searchURL=&searchServer=&ignore-server-case=&startDate=
 ```
 
+## Stager Helpers
+
+### convert_ps1_hex.py
+Takes bare or b64 powershell stager input - replaces flagged evasion with a real one, uses hex as bypass. `agent connected`
