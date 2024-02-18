@@ -227,3 +227,52 @@ $ input_spider.py --show-method --show-status  webhistory.info
 
 ### convert_ps1_hex.py
 Takes bare or b64 powershell stager input - replaces flagged evasion with a real one, uses hex as bypass. `agent connected`
+
+
+# people_search.sh
+Parallel processing of txt files, looking for possible name combinations. 
+
+## Install
+```bash
+$ sudo apt install parallel egrep
+# Edit script to point at your data folder
+$ chmod +x people_search.sh
+```
+
+## Usage 
+
+### Broad Search
+```bash
+$ people_grep.sh olivere smithers
+Searching with pattern: o[,:._+\-]*smithers
+Searching with pattern: osmithers
+Searching with pattern: oli[,:._+\-]*smithers
+Searching with pattern: olismithers
+Searching with pattern: oli[,:._+\-]*smither
+Searching with pattern: olismither
+Searching with pattern: oli[,:._+\-]*smithe
+Searching with pattern: olismithe
+Searching with pattern: oli[,:._+\-]*smith
+Searching with pattern: olismith
+Searching with pattern: oliv[,:._+\-]*smit
+Searching with pattern: olivsmit
+Searching with pattern: olive[,:._+\-]*smit
+Searching with pattern: olivesmit
+Searching with pattern: olive[,:._+\-]*smi
+Searching with pattern: olivesmi
+Searching with pattern: oliver[,:._+\-]*smi
+Searching with pattern: oliversmi
+Searching with pattern: olivere[,:._+\-]*smi
+Searching with pattern: oliveresmi
+Searching with pattern: olivere[,:._+\-]*smithers
+Searching with pattern: oliveresmithers
+```
+
+### Narrow Search
+```bash
+$ people_grep.sh -n olivere smithers
+Searching with pattern: o[,:._+\-]*smithers
+Searching with pattern: osmithers
+Searching with pattern: olivere[,:._+\-]*smithers
+Searching with pattern: oliveresmithers
+```
