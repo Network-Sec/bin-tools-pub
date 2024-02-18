@@ -229,14 +229,14 @@ $ input_spider.py --show-method --show-status  webhistory.info
 Takes bare or b64 powershell stager input - replaces flagged evasion with a real one, uses hex as bypass. `agent connected`
 
 
-# people_search.sh
+# people_grep.sh
 Parallel processing of txt files, looking for possible name combinations. 
 
 ## Install
 ```bash
 $ sudo apt install parallel egrep
 # Edit script to point at your data folder
-$ chmod +x people_search.sh
+$ chmod +x people_grep.sh
 ```
 
 ## Usage 
