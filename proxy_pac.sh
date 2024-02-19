@@ -37,4 +37,31 @@ PAC_FILE="auto_proxy.pac"
 } > $PAC_FILE
 
 echo "PAC file generated at $PAC_FILE"
+
+# Output file for Proxychains
+PROXYCHAINS_CONF="proxychains-append.conf"
+
+# Clear the output file to avoid appending to old content
+> $PROXYCHAINS_CONF
+
+# Process SOCKS5 proxies
+while IFS= read -r line; do
+    # Convert colon to whitespace and prepend with "socks5 "
+    echo "socks5 ${line//:/ }" >> $PROXYCHAINS_CONF
+done < "$SOCKS5_LIST"
+
+# Process SOCKS4 proxies
+while IFS= read -r line; do
+    # Convert colon to whitespace and prepend with "socks4 "
+    echo "socks4 ${line//:/ }" >> $PROXYCHAINS_CONF
+done < "$SOCKS4_LIST"
+
+# Process HTTP(S) proxies - assuming you want to include these as well
+while IFS= read -r line; do
+    # Convert colon to whitespace and prepend with "http "
+    echo "http ${line//:/ }" >> $PROXYCHAINS_CONF
+done < "$HTTP_LIST"
+
+echo "Proxychains file created: $PROXYCHAINS_CONF"
+
 python3 -m http.server 9009
