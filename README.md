@@ -232,6 +232,10 @@ Takes bare or b64 powershell stager input - replaces flagged evasion with a real
 # people_grep.sh
 Parallel processing of txt files, looking for possible name combinations. 
 
+### Updates
+- Added name reverse (for all ranges)
+- Added optional datafolder arg
+
 ## Install
 ```bash
 $ sudo apt install parallel egrep
@@ -275,4 +279,14 @@ Searching with pattern: o[,:._+\-]*smithers
 Searching with pattern: osmithers
 Searching with pattern: olivere[,:._+\-]*smithers
 Searching with pattern: oliveresmithers
+```
+
+### Smallest Range
+```bash
+$ people_grep.sh -s olivere smithers
+```
+
+### Custom Folder
+```bash
+$ people_grep.sh olivere smithers /mnt/d/mydata/
 ```
