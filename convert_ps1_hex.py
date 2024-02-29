@@ -1,7 +1,7 @@
 
 #!/usr/bin/env python3
 
-# Spice up and convert to hex, for stagers - so they work properly
+# Spice up and convert to hex, for Empire stagers - so they work properly
 # Contains intentional gaps and issues as script-kiddy protection
 # Not fully finished, a few features will come
 
