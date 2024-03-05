@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Script made during my OSCP training and used in OSCP exam
+# Does autoscreenshots so you can focus on Hacking
+
+if [[ "$#" -lt 1 ]];
+then
+        echo -e "Usage: autoscreenshot 5 & \n"
+        echo -e "To stop autoscreenshot you need to kill the process: killall autoscreenshot\n"
+        exit 1
+fi
+
+echo "Screenshots are saved to /media/sf_OSCP/autoscreenshot/[date]"
+
+rootDir="/media/sf_OSCP/autoscreenhots" 
+curDate=$(date +'%Y-%m-%d')
+
+if [[ ! -d "$rootDir/$curDate" ]];
+then
+        mkdir -p "$rootDir/$curDate" &>/dev/null || (echo "Cannot create target directory, maybe run as sudo. Exiting"; exit 1) 
+fi
+
+echo -e "\nautoscreenshot will create about $((165*(60/$1)*60*24/1024))MB of screenshots per day"
+
+while true;
+do
+   curTime=$(date +'%H-%M-%S')
+   scrot -d "$1" "$rootDir/$curDate/$curTime.jpg" &>/dev/null  || (echo "\"scrot\" not found, please install with apt. Exiting"; exit 1)  
+done
