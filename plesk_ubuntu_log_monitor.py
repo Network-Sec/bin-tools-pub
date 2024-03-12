@@ -82,42 +82,56 @@ def simplify_user_agent(user_agent_string):
         os = ua.os.family
         return f"{browser}/{browser_version} ({os})"
 
-def process_logs(logs, domain):
-    """Process logs to find and output new unique IPs, using user_agents library for User-Agent categorization."""
+def extract_log_datetime(log_line):
+    """Extracts the datetime from a log line and returns it as a datetime object."""
+    datetime_match = re.search(r'\[(\d{2})/(\w{3})/(\d{4}):(\d{2}):(\d{2}):(\d{2})', log_line)
+    if datetime_match:
+        day, month, year, hour, minute, second = datetime_match.groups()
+        month_number = datetime.strptime(month, '%b').month  # Convert month abbreviation to number
+        log_datetime = datetime(int(year), month_number, int(day), int(hour), int(minute), int(second))
+        return log_datetime  # Return the datetime object directly
+    else:
+        return None  # Or handle as appropriate, e.g., by returning a 'default' datetime or None
+
+def process_logs(logs, domain, time_window=timedelta(minutes=20)):
+    log_entries = []  # Store tuples of (datetime, formatted_output)
+
     for line in logs:
         try:
             if not is_valid_ip(line):
                 continue
             
-            parts = line.split()
-            ip = parts[0]
-            current_time = datetime.now()
+            ip = line.split()[0]
+            log_datetime = extract_log_datetime(line)
+            if not log_datetime:
+                continue  # Skip if datetime extraction failed
 
-            if ip in unique_ips_last_seen and (current_time - unique_ips_last_seen[ip]) <= time_window:
-                continue
+            if ip in unique_ips_last_seen:
+                last_seen_log_time = unique_ips_last_seen[ip]
+                if (log_datetime - last_seen_log_time) <= time_window:
+                    continue  # Skip this IP as it's within the time window
 
-            unique_ips_last_seen[ip] = current_time
-            formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
+            unique_ips_last_seen[ip] = log_datetime  # Update with the new log datetime
 
-            # Extract the User-Agent string from the log line
             user_agent_match = re.search(r'"([^"]+)"$', line)
             user_agent_summary = 'Unknown'
             if user_agent_match:
                 user_agent_summary = simplify_user_agent(user_agent_match.group(1))
 
-            if args.verbose:
-                formatted_output = f"{ip:<15} {formatted_time} {domain:<30} {user_agent_summary:<30} ---- {line.strip()}"
-            else:
-                formatted_output = f"{ip:<15} {formatted_time} {domain:<30} {user_agent_summary:<30}"
-
-            print(formatted_output)
+            formatted_output = f"{ip:<15} {log_datetime.strftime('%Y-%m-%d %H:%M:%S')} {domain:<30} {user_agent_summary}"
+            log_entries.append((log_datetime, formatted_output))
 
         except Exception as e:
             print(f"Error processing line: {e}")
 
+    # Sort log entries by datetime, ensuring chronological order
+    log_entries.sort(key=lambda entry: entry[0])
+
+    return log_entries
 
 def monitor_logs():
     """Monitor log directories for the most recent and relevant logs."""
+    log_entries = []
     for directory in log_dirs:
         log_files = get_recent_log_files(directory)
         for log_file in log_files:
@@ -125,7 +139,13 @@ def monitor_logs():
             domain = os.path.basename(os.path.dirname(log_file))  # Extract domain
             if domain in ["logs", "passenger"]:  # Adjust this condition based on your folder structure
                 domain = "network-sec.de"  # Root domain name for logs outside specific subdomains
-            process_logs(logs, domain)
+            log_entries.extend(process_logs(logs, domain))
+
+    log_entries.sort(key=lambda entry: entry[0])
+
+    # Print sorted log entries
+    for _, entry in log_entries:
+        print(entry)
 
 while True:
     monitor_logs()
