@@ -46,14 +46,14 @@
           - django
           - pandas
           - numpy
-          
+
     - block:
       - name: Install Bun for ubuntu user
         become_user: ubuntu
         shell: |
           curl -o- https://bun.sh/install | bash
         environment:
-          PATH: "/home/ubuntu/.bun/bin:$PATH"
+          PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
         args:
           executable: /bin/bash
       rescue:  # Rescue for the block
@@ -67,10 +67,10 @@
         state: directory
         owner: www-data
         group: www-data
-        mode: '0755'
+        mode: '0777'
 
     - name: Setup the Express app with www-data user
-      become_user: www-data
+      become_user: ubuntu
       shell: |
         cd /var/www/{{ web_domain }} &&
         npm init -y &&
