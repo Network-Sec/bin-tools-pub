@@ -2,7 +2,7 @@
 - hosts: localhost
   become: true
   vars:
-    dev_user: "devuser"  # <-- Change to your preferred username
+    dev_user: "devuser"  # Change this to your preferred username
     web_domain: "webdev.local"
 
   tasks:
@@ -51,10 +51,10 @@
       become_user: "{{ dev_user }}"
       shell: |
         curl -o- https://bun.sh/install | bash
-      args:
-        executable: /bin/bash
       environment:
         PATH: "/home/{{ dev_user }}/.bun/bin:$PATH"
+      args:
+        executable: /bin/bash
 
     - name: Create web root directory and set permissions
       file:
@@ -82,7 +82,7 @@
       user:
         name: "{{ dev_user }}"
         generate_ssh_key: yes
-        ssh_key_file: ".ssh/id_rsa"
+        ssh_key_file: "/home/{{ dev_user }}/.ssh/id_rsa"
 
     - name: Set up authorized_keys for dev_user
       authorized_key:
