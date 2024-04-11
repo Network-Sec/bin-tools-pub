@@ -33,7 +33,19 @@
         npm install -g express-generator
       args:
         executable: /bin/bash
-
+        
+    - name: Install Python libraries
+      pip:
+        name:
+          - requests
+          - httpx
+          - beautifulsoup4
+          - lxml
+          - flask
+          - django
+          - pandas
+          - numpy
+          
     - name: Install Bun for ubuntu user
       become_user: ubuntu
       shell: |
