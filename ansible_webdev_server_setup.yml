@@ -34,7 +34,7 @@
         npm install -g express-generator
       args:
         executable: /bin/bash
-        
+
     - name: Install Python libraries
       pip:
         name:
@@ -47,14 +47,19 @@
           - pandas
           - numpy
           
-    - name: Install Bun for ubuntu user
-      become_user: ubuntu
-      shell: |
-        curl -o- https://bun.sh/install | bash
-      environment:
-        PATH: "/home/ubuntu/.bun/bin:$PATH"
-      args:
-        executable: /bin/bash
+    - block:
+      - name: Install Bun for ubuntu user
+        become_user: ubuntu
+        shell: |
+          curl -o- https://bun.sh/install | bash
+        environment:
+          PATH: "/home/ubuntu/.bun/bin:$PATH"
+        args:
+          executable: /bin/bash
+      rescue:  # Rescue for the block
+        - name: Task to run if Bun installation fails
+          ansible.builtin.debug:
+            msg: 'Bun install failed, re-run the playbook or install Bun manually.'
 
     - name: Create web root directory and set permissions for www-data user
       file:
@@ -86,7 +91,7 @@
           server {
             listen 80;
             server_name {{ web_domain }};
-            
+
             location / {
               proxy_pass http://localhost:3000;
               proxy_http_version 1.1;
@@ -118,7 +123,7 @@
         path: /etc/hosts
         line: "127.0.0.1 {{ web_domain }}"
         state: present
-        
+
     - name: Generate SSH key for root (if not exists)
       command: ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
       args:
