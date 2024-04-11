@@ -2,7 +2,7 @@
 - hosts: localhost
   become: true
   vars:
-    dev_user: "devuser"  # Change this to your preferred username
+    dev_user: "devuser"  # <-- Change to your preferred username
     web_domain: "webdev.local"
 
   tasks:
@@ -171,4 +171,3 @@
     - name: Show generated root SSH private key for manual copy
       debug:
         msg: "{{ ssh_private_key.stdout }}"
-
