@@ -1,0 +1,146 @@
+---
+- hosts: localhost
+  become: true
+  vars:
+    dev_user: "devuser"  # <-- Change to your preferred username
+    web_domain: "webdev.local"
+
+  tasks:
+    - name: Ensure group "docker" exists
+      group:
+        name: docker
+        state: present
+
+    - name: Create a new user for development
+      user:
+        name: "{{ dev_user }}"
+        group: docker
+        shell: /bin/bash
+        create_home: yes
+
+    - name: Update and install development tools
+      apt:
+        name:
+          - build-essential
+          - curl
+          - git
+          - nginx
+          - nmap
+          - python3-pip
+          - python3-venv
+          - net-tools
+          - docker.io
+          - docker-compose
+          - nodejs
+          - npm
+        state: latest
+        update_cache: yes
+
+    - name: Install NVM, Node.js, and global packages
+      become_user: "{{ dev_user }}"
+      shell: |
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        nvm install node
+        npm install -g express-generator
+      args:
+        executable: /bin/bash
+
+    - name: Install Bun
+      become_user: "{{ dev_user }}"
+      shell: |
+        curl -o- https://bun.sh/install | bash
+      args:
+        executable: /bin/bash
+      environment:
+        PATH: "/home/{{ dev_user }}/.bun/bin:$PATH"
+
+    - name: Create web root directory and set permissions
+      file:
+        path: "/var/www/{{ web_domain }}"
+        state: directory
+        owner: "{{ dev_user }}"
+        group: "{{ dev_user }}"
+        mode: '0755'
+
+    - name: Setup the Express app
+      become_user: "{{ dev_user }}"
+      shell: |
+        cd /var/www/{{ web_domain }} &&
+        npm init -y &&
+        npm install express &&
+        echo "const express = require('express');" >> index.js &&
+        echo "const app = express();" >> index.js &&
+        echo "const port = 3000;" >> index.js &&
+        echo "app.get('/', (req, res) => res.send('Hello World!'));" >> index.js &&
+        echo "app.listen(port, () => console.log(\`App listening at http://localhost:${port}\`));" >> index.js
+      args:
+        executable: /bin/bash
+
+    - name: Generate SSH key for dev_user
+      user:
+        name: "{{ dev_user }}"
+        generate_ssh_key: yes
+        ssh_key_file: ".ssh/id_rsa"
+
+    - name: Set up authorized_keys for dev_user
+      authorized_key:
+        user: "{{ dev_user }}"
+        state: present
+        key: "{{ lookup('file', '/home/{{ dev_user }}/.ssh/id_rsa.pub') }}"
+
+    - name: Add Nginx configuration for webdev.local
+      blockinfile:
+        path: "/etc/nginx/sites-available/{{ web_domain }}"
+        create: yes
+        block: |
+          server {
+            listen 80;
+            server_name {{ web_domain }};
+            
+            location / {
+              proxy_pass http://localhost:3000;
+              proxy_http_version 1.1;
+              proxy_set_header Upgrade $http_upgrade;
+              proxy_set_header Connection 'upgrade';
+              proxy_set_header Host $host;
+              proxy_cache_bypass $http_upgrade;
+            }
+          }
+        marker: "# {mark} ANSIBLE MANAGED BLOCK"
+
+    - name: Enable Nginx site configuration
+      command: ln -s /etc/nginx/sites-available/{{ web_domain }} /etc/nginx/sites-enabled/
+      args:
+        creates: "/etc/nginx/sites-enabled/{{ web_domain }}"
+
+    - name: Remove default Nginx site configuration
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Restart Nginx to apply configuration
+      service:
+        name: nginx
+        state: restarted
+
+    - name: Add domain to /etc/hosts for local development
+      lineinfile:
+        path: /etc/hosts
+        line: "127.0.0.1 {{ web_domain }}"
+        state: present
+
+    - name: Secure SSH configuration
+      blockinfile:
+        path: /etc/ssh/sshd_config
+        block: |
+          PermitRootLogin no
+          PasswordAuthentication no
+          PubkeyAuthentication yes
+        marker: "# {mark} ANSIBLE MANAGED BLOCK"
+
+    - name: Restart ssh to apply configuration
+      service:
+        name: ssh
+        state: restarted
