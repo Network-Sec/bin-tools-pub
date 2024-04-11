@@ -2,22 +2,9 @@
 - hosts: localhost
   become: true
   vars:
-    dev_user: "devuser"  # <-- Change to your preferred username
     web_domain: "webdev.local"
 
   tasks:
-    - name: Ensure group "docker" exists
-      group:
-        name: docker
-        state: present
-
-    - name: Create a new user for development
-      user:
-        name: "{{ dev_user }}"
-        group: docker
-        shell: /bin/bash
-        create_home: yes
-
     - name: Update and install development tools
       apt:
         name:
@@ -36,8 +23,8 @@
         state: latest
         update_cache: yes
 
-    - name: Install NVM, Node.js, and global packages
-      become_user: "{{ dev_user }}"
+    - name: Install NVM, Node.js, and global packages for ubuntu user
+      become_user: ubuntu
       shell: |
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
         export NVM_DIR="$HOME/.nvm"
@@ -47,25 +34,25 @@
       args:
         executable: /bin/bash
 
-    - name: Install Bun
-      become_user: "{{ dev_user }}"
+    - name: Install Bun for ubuntu user
+      become_user: ubuntu
       shell: |
         curl -o- https://bun.sh/install | bash
       environment:
-        PATH: "/home/{{ dev_user }}/.bun/bin:$PATH"
+        PATH: "/home/ubuntu/.bun/bin:$PATH"
       args:
         executable: /bin/bash
 
-    - name: Create web root directory and set permissions
+    - name: Create web root directory and set permissions for www-data user
       file:
         path: "/var/www/{{ web_domain }}"
         state: directory
-        owner: "{{ dev_user }}"
-        group: "{{ dev_user }}"
+        owner: www-data
+        group: www-data
         mode: '0755'
 
-    - name: Setup the Express app
-      become_user: "{{ dev_user }}"
+    - name: Setup the Express app with www-data user
+      become_user: www-data
       shell: |
         cd /var/www/{{ web_domain }} &&
         npm init -y &&
@@ -77,18 +64,6 @@
         echo "app.listen(port, () => console.log(\`App listening at http://localhost:${port}\`));" >> index.js
       args:
         executable: /bin/bash
-
-    - name: Generate SSH key for dev_user
-      user:
-        name: "{{ dev_user }}"
-        generate_ssh_key: yes
-        ssh_key_file: "/home/{{ dev_user }}/.ssh/id_rsa"
-
-    - name: Set up authorized_keys for dev_user
-      authorized_key:
-        user: "{{ dev_user }}"
-        state: present
-        key: "{{ lookup('file', '/home/{{ dev_user }}/.ssh/id_rsa.pub') }}"
 
     - name: Add Nginx configuration for webdev.local
       blockinfile:
@@ -130,7 +105,7 @@
         path: /etc/hosts
         line: "127.0.0.1 {{ web_domain }}"
         state: present
-
+        
     - name: Generate SSH key for root (if not exists)
       command: ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
       args:
