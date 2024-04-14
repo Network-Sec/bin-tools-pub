@@ -37,7 +37,7 @@ echo "" #
 
 # Domain information from rapiddns.io
 echo "[+] Domain information from rapiddns.io for $IP"
-curl -s "https://rapiddns.io/s/52.178.17.2" -H "User-Agent: Mozilla/5.0" | pup 'div#result div.row div.col-lg-12 table#table tbody tr td:nth-of-type(1) text{}'
+curl -s "https://rapiddns.io/s/$IP" -H "User-Agent: Mozilla/5.0" | pup 'div#result div.row div.col-lg-12 table#table tbody tr td:nth-of-type(1) text{}'
 echo ""
 
 # Add more requests as needed
