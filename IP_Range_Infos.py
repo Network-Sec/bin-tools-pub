@@ -104,6 +104,14 @@ def flatten_json(data, lang='en', parent_key='', sep='_'):
 
     return items
 
+def hashable(v):
+    if isinstance(v, list):
+        return tuple(hashable(i) for i in v)
+    elif isinstance(v, dict):
+        return tuple((k, hashable(vv)) for k, vv in v.items())
+    else:
+        return v
+    
 def display_results(title, results, headers, summarize):
     print(colored(title, 'blue', attrs=['bold']))
     table = []
@@ -113,7 +121,7 @@ def display_results(title, results, headers, summarize):
             # Summarize results by grouping consecutive IPs with identical data
             grouped_results = {}
             for ip in sorted(results.keys(), key=lambda x: ipaddress.ip_address(x)):
-                data_tuple = tuple(results[ip].items())
+                data_tuple = tuple((k, hashable(v)) for k, v in results[ip].items())
                 if data_tuple not in grouped_results:
                     grouped_results[data_tuple] = [ip]
                 else:
