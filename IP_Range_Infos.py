@@ -95,8 +95,16 @@ def flatten_json(data, lang='en', parent_key='', sep='_'):
                 # Recursive processing for nested dictionaries
                 items.update(flatten_json(v, lang, new_key, sep))
         elif isinstance(v, list):
-            if all(isinstance(i, dict) for i in v):  # Check if all items are dictionaries
-                items[new_key] = [flatten_json(item, lang, new_key, sep) for item in v]
+            if k == 'subdivisions':
+                # Special handling for 'subdivisions' key
+                for i, item in enumerate(v):
+                    if 'names' in item and isinstance(item['names'], dict):
+                        items[f"{new_key}_{i}"] = item['names'].get(lang, item['names'].get('en', 'N/A'))
+                    else:
+                        items.update(flatten_json(item, lang, f"{new_key}_{i}", sep))
+            elif all(isinstance(i, dict) for i in v):  # Check if all items are dictionaries
+                # Flatten each dictionary in the list and extract the name in the selected language
+                items[new_key] = [flatten_json(item, lang, '', sep) for item in v]
             else:
                 items[new_key] = ', '.join(map(str, v))
         else:
