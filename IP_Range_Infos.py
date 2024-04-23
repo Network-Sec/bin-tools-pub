@@ -196,8 +196,11 @@ def main():
 
     # Displaying results
     if csv_results:
-        csv_headers = ['IP'] + list(csv_results[0].keys())[1:]
-        display_results('CSV Data', csv_results, csv_headers, summarize)
+        try:
+            csv_headers = ['IP'] + list(csv_results[0].keys())[1:]
+            display_results('CSV Data', csv_results, csv_headers, summarize)
+        except:
+            print("No CSV Data found")
     if asn_results:
         asn_headers = base_headers.copy()
         first_asn_result = next(iter(asn_results.values()))
