@@ -1,16 +1,7 @@
 #!/usr/bin/env python3
 
-# Rename files that have too similar names and thus may cause conflict 
-# further down an automation / microservices pipeline.
-# Usage: 
-# similarity_renaming.py <directory> <file extension>
-# E.g.:
-# similarity_renaming.py . .jpg
-# Renamed user_1.jpg to user_1_qxrl2j.jpg
-# Renamed user_2.jpg to user_2_wtntep.jpg
-
 import os
-import sys
+import argparse
 import random
 import string
 import re
@@ -20,43 +11,43 @@ def generate_random_suffix(length=6):
     letters_and_digits = string.ascii_lowercase + string.digits
     return ''.join(random.choice(letters_and_digits) for _ in range(length))
 
-def clean_filename(filename):
-    """Remove digits and special characters from filenames, keep letters only."""
-    return re.sub(r'[^a-zA-Z]', '', filename)
+def insert_suffix(filename, suffix, before_special_char=False):
+    """Insert suffix according to the specified mode."""
+    if before_special_char:
+        # Split the filename at the first occurrence of a non-alphabetic character after an alphabetic character
+        parts = re.split(r'([a-zA-Z]+)(?=[^a-zA-Z]|$)', filename, maxsplit=1)
+        if len(parts) >= 3:
+            return parts[0] + parts[1] + suffix + parts[2]
+    return filename + suffix
 
-def find_similar_files(files):
-    """Find files with similar names by cleaning and comparing their names."""
-    cleaned_names = {}
-    for file in files:
-        base_name = os.path.splitext(file)[0]
-        cleaned_name = clean_filename(base_name)
-        if cleaned_name in cleaned_names:
-            cleaned_names[cleaned_name].append(file)
-        else:
-            cleaned_names[cleaned_name] = [file]
-    return {key: value for key, value in cleaned_names.items() if len(value) > 1}
-
-def rename_files(directory, extension):
-    """Rename files that are similar by appending a unique random suffix."""
-    all_files = [f for f in os.listdir(directory) if f.endswith(extension)]
-    similar_files = find_similar_files(all_files)
-    
-    for group in similar_files.values():
-        for filename in group:
-            new_name = f"{os.path.splitext(filename)[0]}_{generate_random_suffix()}{extension}"
+def rename_files(directory, extension, before_special_char=False):
+    """Rename files by appending a unique random suffix."""
+    for filename in os.listdir(directory):
+        if filename.endswith(extension):
+            base_name, ext = os.path.splitext(filename)
+            if before_special_char:
+                new_name = insert_suffix(base_name, f"{generate_random_suffix()}_", before_special_char) + ext
+            else:
+                new_name = insert_suffix(base_name, f"_{generate_random_suffix()}", before_special_char) + ext
             old_file = os.path.join(directory, filename)
             new_file = os.path.join(directory, new_name)
             os.rename(old_file, new_file)
             print(f"Renamed {filename} to {new_name}")
 
-if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: python rename_files.py <directory> <file_extension>")
-        sys.exit(1)
-    
-    dir_path = sys.argv[1]
-    file_ext = sys.argv[2]
-    if not file_ext.startswith('.'):
-        file_ext = '.' + file_ext
+def main():
+    parser = argparse.ArgumentParser(description='Rename files by appending a random suffix.')
+    parser.add_argument('directory', type=str, help='Directory containing the files')
+    parser.add_argument('extension', type=str, help='File extension to match for renaming')
+    parser.add_argument('-b', '--before-special-char', action='store_true',
+                        help='Insert the random string immediately after the alphabetic portion of the filename.')
 
-    rename_files(dir_path, file_ext)
+    args = parser.parse_args()
+
+    # Ensure the file extension starts with a dot
+    if not args.extension.startswith('.'):
+        args.extension = '.' + args.extension
+
+    rename_files(args.directory, args.extension, args.before_special_char)
+
+if __name__ == "__main__":
+    main()
