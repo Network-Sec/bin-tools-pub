@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 
+# Rename files that have too similar names and thus may cause conflict 
+# further down an automation / microservices pipeline.
+# Usage: 
+# similarity_renaming.py <directory> <file extension>
+# E.g.:
+# similarity_renaming.py . .jpg
+# Renamed user_1.jpg to user_1_qxrl2j.jpg
+# Renamed user_2.jpg to user_2_wtntep.jpg
+
 import os
 import argparse
 import random
