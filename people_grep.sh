@@ -2,7 +2,7 @@
 
 # Adjust folder as needed - script is recursive
 # for subfolders, looking for all .txt files
-datafolder="/mnt/d/datafolder/"
+datafolder="/mnt/d/Files/"
 narrowSearch=false
 smallSearch=false
 
@@ -34,7 +34,7 @@ firstName=$1
 lastName=$2
 
 # Define separators, handling the hyphen correctly
-separators="[,:._+\-]*" # Place the hyphen at the end
+separators='[\,:._+\-\ ]?'
 noSeparator=""
 
 patterns=()
@@ -45,10 +45,8 @@ add_pattern() {
     local lName=$2
     # First name followed by last name
     patterns+=("${fName}${separators}${lName}")
-    patterns+=("${fName}${noSeparator}${lName}")
     # Last name followed by first name
     patterns+=("${lName}${separators}${fName}")
-    patterns+=("${lName}${noSeparator}${fName}")
 }
 
 # Narrow search patterns
@@ -56,14 +54,12 @@ if [ "$narrowSearch" = true ]; then
     add_pattern "${firstName:0:1}" "$lastName"
     add_pattern "$firstName" "$lastName"
 elif [ "$smallSearch" = true ]; then
-    # For small search, only use complete first and last name with and without separators
+    # For small search, only use complete first and last name
     add_pattern "$firstName" "$lastName"
 else
     # General search logic
     patterns+=("${firstName:0:1}${separators}${lastName}")
-    patterns+=("${firstName:0:1}${noSeparator}${lastName}")
     patterns+=("${lastName}${separators}${firstName:0:1}")
-    patterns+=("${lastName}${noSeparator}${firstName:0:1}")
     for i in {1..9}; do
         fNameLen=$(( (${#firstName} * i + 9) / 10 ))
         lNameLen=$(( (${#lastName} * (10 - i) + 9) / 10 ))
@@ -85,8 +81,10 @@ if [ -n "$3" ]; then
     datafolder="$3"
 fi
 
-# Process patterns and enable colored output
-for pattern in "${patterns[@]}"; do
-    echo "Searching with pattern: $pattern"
-    find "$datafolder" -type f -name "*.txt" -print0 | parallel -0 egrep --color=always -iH "$pattern"
-done
+# Convert patterns array to a newline-separated string
+echo "[+] Generated patterns:"
+printf '%s\n' "${patterns[@]}"
+
+echo ""
+echo "[+] Starting parallel search..."
+find "$datafolder" -type f -print0 | parallel -j 70 -0 grep --color=always -EaiH :::+ "${patterns[@]}" :::: -
