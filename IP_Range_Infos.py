@@ -68,13 +68,6 @@ def query_csv(csv_data, ip_network):
             results.append(data)
     return results if results else [{"Error": "No CSV data found for this range"}]
 
-def parse_arguments():
-    parser = argparse.ArgumentParser(description="Query IP address or range against local MMDB databases and CSV data.")
-    parser.add_argument('ip', help="IP address or CIDR range to query")
-    parser.add_argument('--language', default='en', help="Preferred language for names, default is English")
-    parser.add_argument('-s', '--summarize', action='store_true', help="Summarize consecutive IPs with identical data")
-    return parser.parse_args()
-
 def get_ip_range(ip):
     ip_net = ipaddress.ip_network(ip, strict=False)
     first_ip = ip_net[0]
@@ -159,9 +152,24 @@ def display_results(title, results, headers, summarize):
 
     print(tabulate(table, headers, tablefmt='grid'))
 
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Query IP address or range against local MMDB databases and CSV data.")
+    parser.add_argument('ip', help="IP address or CIDR range to query")
+    parser.add_argument('--language', default='en', help="Preferred language for names, default is English")
+    parser.add_argument('-s', '--summarize', action='store_true', help="Summarize consecutive IPs with identical data")
+    parser.add_argument('-l', '--location', action='store_true', help="Output only city table info (including lat and long location). When specifying one or more tables, only those will be searched. When ommiting any table, all will be searched.")
+    parser.add_argument('-c', '--country', action='store_true', help="Output only country table info.")
+    parser.add_argument('-a', '--asn', action='store_true', help="Output only asn table info. ASN is best when looking for companies or institutions")
+    parser.add_argument('-r', '--ranges', action='store_true', help="Output only ranges (CSV) table info. Ranges will provide fastest results but only broad infos, like country")
+    return parser.parse_args()
 
 def main():
     args = parse_arguments()
+
+    specified = False
+    if args.location or args.country or args.asn or args.ranges:
+        specified = True
+
     ip_input = args.ip
     preferred_language = args.language
     summarize = args.summarize
@@ -172,21 +180,29 @@ def main():
         print(colored(f"Invalid IP address or range: {e}", 'red'))
         return
 
-    asn_db = load_mmdb(ASN_DB_PATH)
-    city_db = load_mmdb(CITY_DB_PATH)
-    country_db = load_mmdb(COUNTRY_DB_PATH)
-    csv_data = load_csv_files()
-
     # Querying data
-    csv_results = query_csv(csv_data, ip_network)
-    asn_results = {str(ip): query_mmdb(asn_db, str(ip), preferred_language) for ip in ip_network}
-    city_results = {str(ip): query_mmdb(city_db, str(ip), preferred_language) for ip in ip_network}
-    country_results = {str(ip): query_mmdb(country_db, str(ip), preferred_language) for ip in ip_network}
+    csv_results = None
+    if not specified or args.ranges:
+        csv_data = load_csv_files()
+        csv_results = query_csv(csv_data, ip_network)
 
-    # Closing databases
-    asn_db.close()
-    city_db.close()
-    country_db.close()
+    asn_results = None
+    if not specified or args.asn:
+        asn_db = load_mmdb(ASN_DB_PATH)
+        asn_results = {str(ip): query_mmdb(asn_db, str(ip), preferred_language) for ip in ip_network}
+        asn_db.close()
+
+    city_results = None
+    if not specified or args.location:
+        city_db = load_mmdb(CITY_DB_PATH)
+        city_results = {str(ip): query_mmdb(city_db, str(ip), preferred_language) for ip in ip_network}
+        city_db.close()
+
+    country_results = None
+    if not specified or args.country:
+        country_db = load_mmdb(COUNTRY_DB_PATH)
+        country_results = {str(ip): query_mmdb(country_db, str(ip), preferred_language) for ip in ip_network}
+        country_db.close()
 
     # Define headers based on the context - this is not clean yet, but it works
     if summarize:
