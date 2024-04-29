@@ -7,8 +7,10 @@ https://blog.network-sec.de/
 For OSINT and Recon, IP enumeration etc., have a look at this article:   
 https://blog.network-sec.de/post/open_source_intelligence_2024_eu_version/
 
+We need to note also, the tools listed below are definitely not our most interesting projects, and - sorry for that - the description below might be outdated. Take it as a pointer, most tools have either a help function (-h), or a short info as comment inside the script header. 
+
 ## htmlq.py
-To see examples how I use `htmlq` and `jsonq` - see the script: `cve_scrape.sh`.
+To see examples how we used `htmlq` and `jsonq` - see the script: `cve_scrape.sh`.
 ```bash
 $ htmlq.py -h
 usage: htmlq.py [-h] [-j] -l LOOP -s SELECTORS [-t] [-o] [-u URLROOT]
@@ -65,7 +67,7 @@ options:
 fuzzlib.py - encoding and fuzzing toolkit
 
 - The script / lib is intended to be imported, still there's a main function at the end with an example implementation, meaning you can use it as-is / standalone
-- I made this lib for usage as cli tool (quickly do some encoding stuff) as well as larger projects (e.g. XSS fuzzer)
+- We made this lib for usage as cli tool (quickly do some encoding stuff) as well as larger projects (e.g. XSS fuzzer)
 - Both lib and fuzzer below are made async for best performance
 
 ### Usage Example
@@ -105,7 +107,7 @@ These days, Homoglyph attacks are among the top, bread & butter TTP of any APT. 
 
 An easy evasion of the browser punnycode conversion may be use of a long link with many params and some type of (open) redirect, so it won't be visible immediately - but that's just a guess at the moment, I haven't put a lot of thought and effort into this topic yet, I'm sure there's much more knowledge to be discovered.
 
-I see Email addresses as the most dangerous vector, cause an attacker might be able to produce an exact representation of the address of a colleague, friend, business partner, high reputation address like microsoft.com etc.
+We see Email addresses as the most dangerous vector, cause an attacker might be able to produce an exact representation of the address of a colleague, friend, business partner, high reputation address like microsoft.com etc.
 
 We know countless, real attacks using this technique at some point.
 
