@@ -15,6 +15,8 @@ TL;DR: The Infos below are mostly copy & pasted from our former Notebook and thu
 
 However: This content is still made for professionals, who can do most of these things by themselfs, who can read code and update scripts for their purposes. We never wanted to address or entertain a larger audience. If you dive into the world of Ethical Hacking, you'll know that even CVE PoCs often have Script Kiddie Protection built in - meaning they don't just work like consumer software, but need adaptation from a cybersecurity professional, and this is intended by the author(s). As much as we would enjoy an even "higher quality", it would also bring the risk of mis-use by people, who don't know or care, what they're doing.
 
+That "risk factor" is not the main reason, why things are like that. But it is the main reason, why we're ok with it. 
+
 ## htmlq.py
 To see examples how we used `htmlq` and `jsonq` - see the script: `cve_scrape.sh`.
 ```bash
