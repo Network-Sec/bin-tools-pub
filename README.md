@@ -21,7 +21,7 @@ That "risk factor" is not the main reason, why things are like that. But it is t
 Using freely available MMDB data to enumerate CIDR ranges for ASN, Companies, Institutions, Locations, etc.  
 You must download the data (see script header) and provide the folder of the data to the script for it to do anything. 
 
-```bash
+```
 $ IP_Range_Infos.py -h
 usage: IP_Range_Infos.py [-h] [--language LANGUAGE] [-s] [-l] [-c] [-a] [-r] ip
 
