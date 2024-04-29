@@ -1,6 +1,8 @@
 # My "bin folder" tools
-Tools I created as FOSS.
+Tools we created as FOSS.
 
+You'll find a lot more infos in our Blog: https://blog.network-sec.de/  
+For OSINT and Recon, IP enumeration etc.: https://blog.network-sec.de/post/open_source_intelligence_2024_eu_version/
 
 ## htmlq.py
 To see examples how I use `htmlq` and `jsonq` - see the script: `cve_scrape.sh`.
