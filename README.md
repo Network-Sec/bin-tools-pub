@@ -17,6 +17,29 @@ However: This content is still made for professionals, who can do most of these 
 
 That "risk factor" is not the main reason, why things are like that. But it is the main reason, why we're ok with it. 
 
+## IP Range Infos
+IP_Range_Infos.py - Using freely available MMDB data to enumerate CIDR ranges for ASN, Companies, Institutions, Locations, etc.  
+You must download the data (see script header) and provide the folder of the data to the script for it to do anything. 
+
+```bash
+$ IP_Range_Infos.py -h
+usage: IP_Range_Infos.py [-h] [--language LANGUAGE] [-s] [-l] [-c] [-a] [-r] ip
+
+Query IP address or range against local MMDB databases and CSV data.
+
+positional arguments:
+  ip                   IP address or CIDR range to query
+
+options:
+  -h, --help           show this help message and exit
+  --language LANGUAGE  Preferred language for names, default is English
+  -s, --summarize      Summarize consecutive IPs with identical data
+  -l, --location       Output only city table info (including lat and long location). When specifying one or more tables, only those will be searched. When ommiting any table, all will be searched.
+  -c, --country        Output only country table info.
+  -a, --asn            Output only asn table info. ASN is best when looking for companies or institutions
+  -r, --ranges         Output only ranges (CSV) table info. Ranges will provide fastest results but only broad infos, like country
+```
+
 ## htmlq.py
 To see examples how we used `htmlq` and `jsonq` - see the script: `cve_scrape.sh`.
 ```bash
