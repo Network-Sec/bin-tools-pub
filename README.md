@@ -4,7 +4,7 @@ Tools we created as FOSS.
 You'll find a lot more infos in our Blog: 
 https://blog.network-sec.de/  
 
-For OSINT and Recon, IP enumeration etc., have a look at this article: 
+For OSINT and Recon, IP enumeration etc., have a look at this article:   
 https://blog.network-sec.de/post/open_source_intelligence_2024_eu_version/
 
 ## htmlq.py
