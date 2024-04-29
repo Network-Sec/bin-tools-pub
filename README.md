@@ -13,7 +13,7 @@ The reason, why this happened is the following: After several years in Offensive
 
 TL;DR: The Infos below are mostly copy & pasted from our former Notebook and thus ain't that pretty.  
 
-However: This content is still made for professionals, who can do most of these things by themselfs, who can read code and update scripts for their purposes. We never wanted to address or entertain a larger audience. If you dive into the world of Ethical Hacking, you'll know that even CVE PoCs often have Script Kiddie Protection built in - meaning they don't just work like consumer software, but need adaptation from a cybersecurity professional. As much as we would enjoy an even "higher quality", it would also bring the risk of mis-use by people, who don't know or care, what they're doing.
+However: This content is still made for professionals, who can do most of these things by themselfs, who can read code and update scripts for their purposes. We never wanted to address or entertain a larger audience. If you dive into the world of Ethical Hacking, you'll know that even CVE PoCs often have Script Kiddie Protection built in - meaning they don't just work like consumer software, but need adaptation from a cybersecurity professional, and this is intended by the author(s). As much as we would enjoy an even "higher quality", it would also bring the risk of mis-use by people, who don't know or care, what they're doing.
 
 ## htmlq.py
 To see examples how we used `htmlq` and `jsonq` - see the script: `cve_scrape.sh`.
