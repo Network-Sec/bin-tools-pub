@@ -7,7 +7,8 @@ https://blog.network-sec.de/
 For OSINT and Recon, IP enumeration etc., have a look at this article:   
 https://blog.network-sec.de/post/open_source_intelligence_2024_eu_version/
 
-We need to note also, the tools listed below are definitely not our most interesting projects, and - sorry for that - the description below might be outdated. Take the notes here as a pointer into a direction, most tools have either a help function (-h), or a short info as comment inside the script header. 
+## A Word On Quality
+We'd like to note, not all the tools listed below are our most interesting projects, and - sorry for that - the descriptions below might be outdated. Take the notes here as a pointer into a direction, most tools have either a help function (-h), or a short info as comment inside the script header. 
 
 The reason, why this happened is the following: After several years in Offensive Security we completely changed our online presence and the way, how we output information from our Security Research and projects. Formerly we had a kind of "Notebook", made primarely for ourselfs and not for other people. When you look into your own notes, you may quickly realize, other people might not understand, what you did there. Since 2024 we tried to make a more comprehensive Blog, and to make our scripts more stable and generic. 
 
