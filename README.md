@@ -17,8 +17,8 @@ However: This content is still made for professionals, who can do most of these 
 
 That "risk factor" is not the main reason, why things are like that. But it is the main reason, why we're ok with it. 
 
-## IP Range Infos
-IP_Range_Infos.py - Using freely available MMDB data to enumerate CIDR ranges for ASN, Companies, Institutions, Locations, etc.  
+## IP_Range_Infos.py
+Using freely available MMDB data to enumerate CIDR ranges for ASN, Companies, Institutions, Locations, etc.  
 You must download the data (see script header) and provide the folder of the data to the script for it to do anything. 
 
 ```bash
