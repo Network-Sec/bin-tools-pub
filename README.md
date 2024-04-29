@@ -40,6 +40,11 @@ options:
   -r, --ranges         Output only ranges (CSV) table info. Ranges will provide fastest results but only broad infos, like country
 ```
 
+#### Example Output
+This query only took a few seconds. Note that you need a wider screen or higher screen resolution, to correctly display the table. You can also zoom out using "Ctrl -".
+
+![IP_range_infos2](https://github.com/Network-Sec/bin-tools-pub/assets/85315993/d609bd8d-2710-4fa3-8719-f6841552cf6d)
+
 ## htmlq.py
 To see examples how we used `htmlq` and `jsonq` - see the script: `cve_scrape.sh`.
 ```bash
