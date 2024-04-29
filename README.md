@@ -1,7 +1,7 @@
 # Our "bin folder" tools
 Tools we created as FOSS.
 
-You'll find a lot more infos in our Blog: 
+You'll find a lot more infos in our Blog:   
 https://blog.network-sec.de/  
 
 For OSINT and Recon, IP enumeration etc., have a look at this article:   
