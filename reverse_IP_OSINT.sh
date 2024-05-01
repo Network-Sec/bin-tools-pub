@@ -4,13 +4,14 @@
 # provide practical Threat Intelligence Output
 # Add more services as needed
 
-# Check if an IP address is passed as an argument
+# Usage check
 if [ "$#" -ne 1 ]; then
-    echo "Usage: $0 <IP Address>"
+    echo "Usage: $0 <IP Address or CIDR>"
     exit 1
 fi
 
 INPUT="$1"
+IS_CIDR=false
 
 # Function to process a single IP
 process_ip() {
@@ -38,6 +39,19 @@ process_ip() {
     echo "[+] Domain information from ipchaxun.com for $IP"
     curl -s "https://ipchaxun.com/$IP/" -H "User-Agent: Mozilla/5.0" | pup 'div#J_domain p a text{}'
     echo ""
+
+    if [[ $IS_CIDR=false ]]; 
+    then 
+        # tlsx for SAN and CN from the certificate
+        echo "[+] SAN and CN from the certificate for $IP"
+        echo $IP | tlsx -san -cn -silent
+        echo ""
+
+        # Domain information from rapiddns.io
+        echo "[+] Domain information from rapiddns.io for $IP"
+        curl -s "https://rapiddns.io/s/$IP" -H "User-Agent: Mozilla/5.0" | pup 'div#result div.row div.col-lg-12 table#table tbody tr td:nth-of-type(1) text{}'
+        echo ""
+    fi
 }
 
 # Function to handle CIDR for services supporting it directly
@@ -84,6 +98,7 @@ expand_cidr() {
 
 # Check if input is a CIDR and services can use it directly
 if echo "$INPUT" | grep -q "/"; then
+    IS_CIDR=true
     echo "CIDR detected, using appropriate services..."
     process_cidr $INPUT
     expand_cidr $INPUT
