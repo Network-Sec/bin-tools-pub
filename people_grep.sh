@@ -87,4 +87,4 @@ printf '%s\n' "${patterns[@]}"
 
 echo ""
 echo "[+] Starting parallel search..."
-find "$datafolder" -type f -print0 | parallel -j 70 -0 grep --color=always -EaiH :::+ "${patterns[@]}" :::: -
+find "$datafolder" -type f -print0 $(echo "-not -name ""\"*."{gz,tar,zip,bin,exe,dll,deb,rpm,iso,img,so,o,dmg}"\"") -type d | parallel -j 70 -0 grep --color=always -EaiH ::: "${patterns[@]}" :::: -
