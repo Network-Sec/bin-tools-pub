@@ -32,12 +32,12 @@ process_ip() {
 
     # Domain information from site.ip138.com
     echo "[+] Domain information from site.ip138.com for $IP"
-    curl -s "https://site.ip138.com/$IP" -H "User-Agent: Mozilla/5.0" | pup 'div.result.result2 ul#list li a[href] text{}'
+    timeout 10 curl -s "https://site.ip138.com/$IP" -H "User-Agent: Mozilla/5.0" | pup 'div.result.result2 ul#list li a[href] text{}'
     echo ""
 
     # Domain information from ipchaxun.com
     echo "[+] Domain information from ipchaxun.com for $IP"
-    curl -s "https://ipchaxun.com/$IP/" -H "User-Agent: Mozilla/5.0" | pup 'div#J_domain p a text{}'
+    timeout 10 curl -s "https://ipchaxun.com/$IP/" -H "User-Agent: Mozilla/5.0" | pup 'div#J_domain p a text{}'
     echo ""
 
     if [[ $IS_CIDR=false ]]; 
@@ -49,7 +49,7 @@ process_ip() {
 
         # Domain information from rapiddns.io
         echo "[+] Domain information from rapiddns.io for $IP"
-        curl -s "https://rapiddns.io/s/$IP" -H "User-Agent: Mozilla/5.0" | pup 'div#result div.row div.col-lg-12 table#table tbody tr td:nth-of-type(1) text{}'
+        timeout 10 curl -s "https://rapiddns.io/s/$IP" -H "User-Agent: Mozilla/5.0" | pup 'div#result div.row div.col-lg-12 table#table tbody tr td:nth-of-type(1) text{}'
         echo ""
     fi
 }
@@ -66,7 +66,7 @@ process_cidr() {
 
     # Domain information from rapiddns.io
     echo "[+] Domain information from rapiddns.io for $CIDR"
-    curl -s "https://rapiddns.io/s/$CIDR" -H "User-Agent: Mozilla/5.0" | pup 'div#result div.row div.col-lg-12 table#table tbody tr td:nth-of-type(1) text{}'
+    timeout 10 curl -s "https://rapiddns.io/s/$CIDR" -H "User-Agent: Mozilla/5.0" | pup 'div#result div.row div.col-lg-12 table#table tbody tr td:nth-of-type(1) text{}'
     echo ""
 }
 
