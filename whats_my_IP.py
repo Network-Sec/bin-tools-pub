@@ -73,8 +73,8 @@ def get_current_ip(service_url):
         response.raise_for_status()  # Raise an error on bad status
         return response.text.strip(), service_url
     except Exception as e:
-        print(f"Failed to get IP from {service_url}: {e}")
-        return None
+        print(f"Failed to get IP from {service_url}")
+        return None, service_url
 
 def main():
     # Initialize the services file if it does not exist
