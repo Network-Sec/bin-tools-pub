@@ -97,8 +97,8 @@ def fetch_repos(username, filter_values=None):
 
         except requests.exceptions.HTTPError as err:
             if err.response.status_code == 403:
-                print("Rate limit hit. Waiting 60 seconds...")
-                time.sleep(60)
+                print("Rate limit hit. Waiting 20 seconds...")
+                time.sleep(20)
                 continue
             else:
                 print(f"HTTP error for repos of {username}: {err}")
