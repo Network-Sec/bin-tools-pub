@@ -32,6 +32,13 @@ Adding neverlasty to the queue from forked repo CVE-2021-3156
 
 The script intentionally doesn't save repos to disk, it's for finding / enumerating users on a subject matter.
 
+## Clone everything from user
+API limit may hit, prepare your dump-space
+
+```bash
+$ git_clone_complete_user.sh android-rooting-tools
+```
+
 ## Reverse IP OSINT
 Very handy tool
 
