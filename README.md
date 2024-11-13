@@ -18,6 +18,14 @@ However: This content is still made for professionals, who can do most of these 
 
 That "risk factor" is not the main reason, why things are like that. But it is the main reason, why we're ok with it. 
 
+## Recursively search GitHub
+When you have an API key you can adjust the throttles to make it faster. The DB stuff doesn't fully work yet (checkpoints, etc.) but it's good enough for us right now... know that it's rather improvised on the spot, there's likely better tools for this exact purpose. 
+
+```bash
+$ git_get_user_forks_filtered.py "<username1>,<username2>,<username3>" --filter cve,b
+ackdoor,rat,exploit,rce,kernel,vuln,evil,firmware,pwn,privesc,privileg,escalation,lfi,remote,phish,jailbreak,poc,exp
+```
+
 ## IP_Range_Infos.py
 Using freely available MMDB data to enumerate CIDR ranges for ASN, Companies, Institutions, Locations, etc.  
 You must download the data (see script header) and provide the folder of the data to the script for it to do anything. 
