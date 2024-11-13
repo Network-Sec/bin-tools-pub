@@ -26,6 +26,8 @@ $ git_get_user_forks_filtered.py "<username1>,<username2>,<username3>" --filter 
 ackdoor,rat,exploit,rce,kernel,vuln,evil,firmware,pwn,privesc,privileg,escalation,lfi,remote,phish,jailbreak,poc,exp
 ```
 
+The script intentionally doesn't save repos to disk, it's for finding / enumerating users on a subject matter.
+
 ## Reverse IP OSINT
 Very handy tool
 
