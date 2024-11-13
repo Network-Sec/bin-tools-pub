@@ -24,6 +24,10 @@ When you have an API key you can adjust the throttles to make it faster. The DB 
 ```bash
 $ git_get_user_forks_filtered.py "<username1>,<username2>,<username3>" --filter cve,b
 ackdoor,rat,exploit,rce,kernel,vuln,evil,firmware,pwn,privesc,privileg,escalation,lfi,remote,phish,jailbreak,poc,exp
+
+Adding neverlasty to the queue from forked repo CVE-2021-3156
+ Queue: ['Zhilakai123', 'Xylaraetha', 'Glintzenberg', 'Namarothias', 'Lunawhisper', 'Vesperlysia', 'Aurorionixx', 'Khaosstar23', 'Mythrilweaver', 'Etherealmouse42', 'neverlasty']
+ Adding kurl3r to the queue from forked repo exploit_me
 ```
 
 The script intentionally doesn't save repos to disk, it's for finding / enumerating users on a subject matter.
