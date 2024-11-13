@@ -38,6 +38,8 @@ API limit may hit, prepare your dump-space
 $ git_clone_complete_user.sh android-rooting-tools
 ```
 
+One of the nicer ones, deals with existing dirs and some errors. 
+
 ## Reverse IP OSINT
 Very handy tool
 
