@@ -26,6 +26,27 @@ $ git_get_user_forks_filtered.py "<username1>,<username2>,<username3>" --filter 
 ackdoor,rat,exploit,rce,kernel,vuln,evil,firmware,pwn,privesc,privileg,escalation,lfi,remote,phish,jailbreak,poc,exp
 ```
 
+## Reverse IP OSINT
+Very handy tool
+
+```bash
+$ reverse_IP_OSINT.sh 217.160.0.256
+----------------- Processing IP: 217.160.0.256 -----------------
+[+] dig result for 217.160.0.256
+217-160-0-256.elastic-ssl.ui-r.com.
+
+[+] Domain information from site.ip138.com for 217.160.0.256
+[...cut...]
+
+[+] Domain information from ipchaxun.com for 217.160.0.256
+[...cut...]
+
+[+] SAN and CN from the certificate for 217.160.0.256
+[...cut...]
+
+[+] Domain information from rapiddns.io for 217.160.0.256
+```
+
 ## IP_Range_Infos.py
 Using freely available MMDB data to enumerate CIDR ranges for ASN, Companies, Institutions, Locations, etc.  
 You must download the data (see script header) and provide the folder of the data to the script for it to do anything. 
