@@ -1,6 +1,6 @@
-# Custom Traceroute - Whois combo which is often surprisingly useful
+# Custom Traceroute - Whois combo which is often surprisingly useful (DFIR, Network Pentesting, Debugging...)
 # Usage Example:
-# > whois.ps1 172.217.18.14 -whois -timeout 2
+# > tracert_whois.ps1 172.217.18.14 -whois -timeout 2
 
 # Define the command line params and defaults
 param (
