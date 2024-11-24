@@ -18,6 +18,73 @@ However: This content is still made for professionals, who can do most of these 
 
 That "risk factor" is not the main reason, why things are like that. But it is the main reason, why we're ok with it. 
 
+## Traceroute-Whois
+```powershell
+$ tracert_whois.ps1 172.217.18.14 -whois -timeout 2
+Tracing route to 172.217.18.14  over a maximum of 30 hops:
+
+Hop RoundtripTime  Address          Hostname
+1   5,66           192.168.178.1    fritz.box
+
+Whois Information
+------------------
+                                              Contact                        Name                           Organisation
+Contact                                       administrative
+Name                                          General Manager
+Organisation                                  Intercap Registry Inc.
+Address                                       Cayman Islands (the)
+Phone                                         +1 833 436 8462
+Email                                         admin@intercap.inc
+Nameserver
+Nameserver IPV4
+Nameserver IPV6
+
+
+                                              Contact                        Name                           Organisation
+Contact                                       technical
+Name                                          CTO
+Organisation                                  CentralNic
+Address                                       United Kingdom of Great Britain and Northern Ireland (the)
+
+Phone                                         +44 20 33 88 0600
+Email                                         tld.ops@centralnic.com
+Nameserver                                    D.NIC.BOX
+Nameserver IPV4                               212.18.249.139
+Nameserver IPV6                               2a04:2b00:13ff:0:0:0:0:139
+
+
+2   6,7            92.11.9.1                  f..<censored>....versatel.de
+
+Whois Information
+------------------
+                                              Contact                        Name                           Organisation
+Address                                       Germany
+Phone                                         +49 69 27235 0
+Email                                         ianacontact@denic.de
+Nameserver
+Nameserver IPV4
+Nameserver IPV6
+
+                                              Contact                        Name                           Organisation
+Contact                                       technical
+Name                                          Business Services
+Organisation                                  DENIC eG
+Address                                       Germany
+Phone                                         +49 69 27235 272
+Email                                         dbs@denic.de
+Nameserver                                    Z.NIC.DE
+Nameserver IPV4                               194.246.96.1
+Nameserver IPV6                               2a02:568:fe02:0:0:0:0:de
+
+
+3   9,44           12.14.4.1    kar1..<censored - wtf, karl?>...versatel.de
+4   10,35          2.4.24.19    N/A
+5   12,23          2.4.4.14    N/A
+6   10,75          8.70.25.51  N/A
+7   10,12          2.53.6.37   N/A
+8   10,92          2.17.1.4    f<censored>.net
+``` 
+
 ## Recursively search GitHub
 When you have an API key you can adjust the throttles to make it faster. The DB stuff doesn't fully work yet (checkpoints, etc.) but it's good enough for us right now... know that it's rather improvised on the spot, there's likely better tools for this exact purpose. 
 
