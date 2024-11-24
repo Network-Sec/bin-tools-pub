@@ -19,6 +19,8 @@ However: This content is still made for professionals, who can do most of these 
 That "risk factor" is not the main reason, why things are like that. But it is the main reason, why we're ok with it. 
 
 ## Traceroute-Whois
+Custom Traceroute - Whois combo which is often surprisingly useful (DFIR, Network Pentesting, Debugging...)
+
 ```powershell
 $ tracert_whois.ps1 172.217.18.14 -whois -timeout 2
 Tracing route to 172.217.18.14  over a maximum of 30 hops:
