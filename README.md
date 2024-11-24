@@ -37,23 +37,17 @@ Organisation                                  Intercap Registry Inc.
 Address                                       Cayman Islands (the)
 Phone                                         +1 833 436 8462
 Email                                         admin@intercap.inc
-Nameserver
-Nameserver IPV4
-Nameserver IPV6
-
 
                                               Contact                        Name                           Organisation
 Contact                                       technical
 Name                                          CTO
 Organisation                                  CentralNic
 Address                                       United Kingdom of Great Britain and Northern Ireland (the)
-
 Phone                                         +44 20 33 88 0600
 Email                                         tld.ops@centralnic.com
 Nameserver                                    D.NIC.BOX
 Nameserver IPV4                               212.18.249.139
 Nameserver IPV6                               2a04:2b00:13ff:0:0:0:0:139
-
 
 2   6,7            92.11.9.1                  f..<censored>....versatel.de
 
@@ -78,14 +72,15 @@ Nameserver                                    Z.NIC.DE
 Nameserver IPV4                               194.246.96.1
 Nameserver IPV6                               2a02:568:fe02:0:0:0:0:de
 
-
 3   9,44           12.14.4.1    kar1..<censored - wtf, karl?>...versatel.de
+<karls info censored>
 4   10,35          2.4.24.19    N/A
 5   12,23          2.4.4.14    N/A
 6   10,75          8.70.25.51  N/A
 7   10,12          2.53.6.37   N/A
 8   10,92          2.17.1.4    f<censored>.net
 ``` 
+Naturally we only receive the whois info of the next `Authority`, yet it provides you with a fast overview, names, not numbers, where you're at - we could add real `ASN` resolution and more gimmicks, for us it strikes the balances between speed, single-script call and informative output, just a quick overview where you're at. 
 
 ## Recursively search GitHub
 When you have an API key you can adjust the throttles to make it faster. The DB stuff doesn't fully work yet (checkpoints, etc.) but it's good enough for us right now... know that it's rather improvised on the spot, there's likely better tools for this exact purpose. 
