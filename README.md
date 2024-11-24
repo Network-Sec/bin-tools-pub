@@ -57,9 +57,6 @@ Whois Information
 Address                                       Germany
 Phone                                         +49 69 27235 0
 Email                                         ianacontact@denic.de
-Nameserver
-Nameserver IPV4
-Nameserver IPV6
 
                                               Contact                        Name                           Organisation
 Contact                                       technical
