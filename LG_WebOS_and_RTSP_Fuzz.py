@@ -151,4 +151,3 @@ while True:
 print("\n--- Final List of Paths ---")
 for path in sorted(all_paths):
     print(f"  {path}")
-
