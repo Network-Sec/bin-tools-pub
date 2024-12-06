@@ -37,9 +37,16 @@ initial_paths.update(load_fuzz_paths())
 
 def extract_paths(response):
     paths = set()
-    path_pattern = r"/[a-zA-Z0-9\-._~:/?#[\]@!$&'()*+,;=%]+"
-    matches = re.findall(path_pattern, response)
-    paths.update(matches)
+    # If response is a CaseInsensitiveDict (headers), extract relevant headers
+    if isinstance(response, requests.structures.CaseInsensitiveDict):
+        for header, value in response.items():
+            if isinstance(value, str):  # Ensure the value is a string before applying regex
+                matches = re.findall(r"/[a-zA-Z0-9\-._~:/?#[\]@!$&'()*+,;=%]+", value)
+                paths.update(matches)
+    # If the response is a string (body content), search it directly
+    elif isinstance(response, str):
+        matches = re.findall(r"/[a-zA-Z0-9\-._~:/?#[\]@!$&'()*+,;=%]+", response)
+        paths.update(matches)
     return paths
 
 def make_request(protocol, host, port, prefix, path, verb, auth=None):
@@ -144,3 +151,4 @@ while True:
 print("\n--- Final List of Paths ---")
 for path in sorted(all_paths):
     print(f"  {path}")
+
