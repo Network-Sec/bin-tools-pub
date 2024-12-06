@@ -11,18 +11,16 @@ import sys
 ports = [18181, 3000, 7000, 7250, 36866, 3001, 1086, 1092]
 prefixes = ["", "/apps/"]
 faulty_paths = ["/major>", "/xml>", "/test", "/example", "/random", "/<invalid>", "/\\"]
-fuzz_paths = ["/" + "A" * (2 ** n) for n in range(2, 17)]
+fuzz_paths = []# ["/" + "A" * (2 ** n) for n in range(2, 17)]
 initial_paths = set(faulty_paths + fuzz_paths)
 http_verbs = [
-    "BAMBOOZLE", "CHECKIN", "CHECKOUT", "COPY", "DELETE", "GET", "HEAD", "INDEX",
-    "LINK", "LOCK", "MKCOL", "MOVE", "NOEXISTE", "OPTIONS", "ORDERPATCH", "PATCH",
-    "POST", "PROPFIND", "PROPPATCH", "PUT", "REPORT", "SEARCH", "SHOWMETHOD",
-    "SPACEJUMP", "TEXTSEARCH", "TRACE", "TRACK", "UNCHECKOUT", "UNLINK", "UNLOCK",
-    "VERSION-CONTROL"
+    "GET", "INDEX",
+    "OPTIONS", 
+    "POST", "PUT", "TRACE"
 ]
-protocols = ["http", "https", "ftp", "gopher", "rtsp"]
-auth_usernames = ["admin", "root", "guest", "user", "test"]
-auth_passwords = ["1234", "admin", "root", "password", "12345"]
+protocols = ["http", "ftp", "gopher", "rtsp"]
+auth_usernames = ["admin", "root", "webos", "lg", "lgadmin"]
+auth_passwords = ["1234", "admin", "root", "password", "12345", "webos", "lg", "lgadmin"]
 auth_combos = list(itertools.product(auth_usernames, auth_passwords))
 rtsp_methods = ["OPTIONS", "DESCRIBE", "SETUP", "PLAY"]
 
@@ -50,7 +48,7 @@ def make_request(protocol, host, port, prefix, path, verb, auth=None):
         if auth:
             headers["Authorization"] = f"Basic {auth}"
         try:
-            response = requests.request(verb, url, headers=headers, timeout=2)
+            response = requests.request(verb, url, headers=headers, timeout=0.25)
             return response
         except requests.exceptions.RequestException:
             return None
@@ -60,7 +58,7 @@ def make_request(protocol, host, port, prefix, path, verb, auth=None):
             for template in req_templates:
                 request = template(method, i, port, auth_header)
                 try:
-                    with socket.create_connection((host, port), timeout=2) as s:
+                    with socket.create_connection((host, port), timeout=0.25) as s:
                         s.sendall(request)
                         response = s.recv(4096).decode()
                         return response
@@ -73,13 +71,15 @@ new_paths = set()
 max_feedback_length = 0
 iteration = 0
 
+iteration = 0
+
 while True:
     iteration += 1
     current_new_paths = set()
     print(f"--- Iteration {iteration} ---")
-    print(f"Scanning {len(all_paths) + len(new_paths)} total path(s) on {len(ports)} ports with {len(http_verbs)} HTTP verbs...")
 
-    paths_to_scan = list(all_paths) + list(new_paths)
+    # First, scan all known paths (initial + previously discovered)
+    paths_to_scan = list(all_paths) if iteration == 1 else list(new_paths)
     for protocol in protocols:
         for port in ports:
             print(f"Scanning port {port} over {protocol}...")
@@ -92,19 +92,24 @@ while True:
                             sys.stdout.write(f"\r{feedback}{' ' * padding}")
                             sys.stdout.flush()
                             max_feedback_length = max(max_feedback_length, len(feedback))
+
                             response = make_request(protocol, "192.168.2.9", port, prefix, path, verb, auth)
                             if response:
-                                paths = extract_paths(response) if protocol in ["http", "https"] else set()
-                                new_paths_to_add = paths - all_paths
-                                current_new_paths.update(new_paths_to_add)
-                                all_paths.update(new_paths_to_add)
+                                if protocol in ["http", "https"]:
+                                    extracted_paths = extract_paths(response)
+                                    current_new_paths.update(extracted_paths)
+
             print("\n")
+
+    # After scanning known paths, prepare for the next iteration
     if current_new_paths:
         print(f"Found {len(current_new_paths)} new path(s).")
         new_paths = current_new_paths
+        all_paths.update(current_new_paths)
     else:
         print("No new paths found, stopping.")
         break
+
 
 print("\n--- Final List of Paths ---")
 for path in sorted(all_paths):
