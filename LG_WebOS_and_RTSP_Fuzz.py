@@ -82,6 +82,7 @@ while True:
     iteration += 1
     current_new_paths = set()
     print(f"--- Iteration {iteration} ---")
+    print(f"Scanning {len(all_paths) + len(new_paths)} total path(s) on {len(ports)} ports with {len(http_verbs)} HTTP verbs...")
 
     # First, scan all known paths (initial + previously discovered)
     paths_to_scan = list(all_paths) if iteration == 1 else list(new_paths)
