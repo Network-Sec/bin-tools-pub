@@ -118,13 +118,15 @@ while True:
                                 if response.headers or response.text:
                                     response_counters["has_content"] += 1
 
+                                # Extract paths from headers if available
                                 if response.headers:
-                                    newpths = extract_paths(response.headers)
+                                    newpths = extract_paths(response.headers)  # Now handles CaseInsensitiveDict
                                     response_counters['PathsInHeader'] += len(newpths)
                                     current_new_paths.update(newpths)
 
+                                # Extract paths from the body if available
                                 if response.text:
-                                    newpths = extract_paths(response.text)
+                                    newpths = extract_paths(response.text)  # Handles the body content
                                     response_counters['PathsInBody'] += len(newpths)
                                     current_new_paths.update(newpths)
 
@@ -135,9 +137,10 @@ while True:
                             counter_feedback = (
                                 f"No Response: {response_counters['no_response']} | "
                                 f"Responses w. Status Code: {response_counters['status_code']} | "
-                                f"Responses w. Content: {response_counters['has_content']} | Paths in header: {response_counters['PathsInHeader']} | Paths in body: {response_counters['PathsInBody']} "
-                            )                   
-
+                                f"Responses w. Content: {response_counters['has_content']} | "
+                                f"Paths in header: {response_counters['PathsInHeader']} | "
+                                f"Paths in body: {response_counters['PathsInBody']} "
+                            )
 
     # After scanning known paths, prepare for the next iteration
     if current_new_paths:
