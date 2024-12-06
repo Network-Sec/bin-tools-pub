@@ -38,7 +38,7 @@ initial_paths.update(load_fuzz_paths())
 def extract_paths(response):
     paths = set()
     path_pattern = r"/[a-zA-Z0-9\-._~:/?#[\]@!$&'()*+,;=%]+"
-    matches = re.findall(path_pattern, response.text)
+    matches = re.findall(path_pattern, response)
     paths.update(matches)
     return paths
 
@@ -73,14 +73,13 @@ max_feedback_length = 0
 iteration = 0
 
 # Initialize response counters
-response_counters = {"no_response": 0, "status_code": 0, "has_content": 0}
+response_counters = {"no_response": 0, "status_code": 0, "has_content": 0, "PathsInHeader": 0, "PathsInBody": 0}
 
 # Reset counters at the start of each iteration
 response_counters = {key: 0 for key in response_counters}
 
 while True:
     iteration += 1
-    current_new_paths = set()
     print(f"--- Iteration {iteration} ---")
     print(f"Scanning {len(all_paths) + len(new_paths)} total path(s) on {len(ports)} ports with {len(http_verbs)} HTTP verbs...")
 
@@ -92,7 +91,7 @@ while True:
                 for prefix in prefixes:
                     for verb in (http_verbs if protocol in ["http", "https"] else rtsp_methods):
                         for auth in [None] + [f"{u}:{p}" for u, p in auth_combos]:
-                            # Build the current feedback string
+
                             feedback = f"  Protocol: {protocol}, Port: {port}, Prefix: {prefix}, Path: {path}, Verb: {verb}, Auth: {auth or 'None'}"
                             padding = max(0, max_feedback_length - len(feedback))
 
@@ -111,6 +110,17 @@ while True:
                                 response_counters["status_code"] += 1
                                 if response.headers or response.text:
                                     response_counters["has_content"] += 1
+
+                                if response.headers:
+                                    newpths = extract_paths(response.headers)
+                                    response_counters['PathsInHeader'] += len(newpths)
+                                    current_new_paths.update(newpths)
+
+                                if response.text:
+                                    newpths = extract_paths(response.text)
+                                    response_counters['PathsInBody'] += len(newpths)
+                                    current_new_paths.update(newpths)
+
                             else:
                                 response_counters["no_response"] += 1
 
@@ -118,15 +128,14 @@ while True:
                             counter_feedback = (
                                 f"No Response: {response_counters['no_response']} | "
                                 f"Responses w. Status Code: {response_counters['status_code']} | "
-                                f"Responses w. Content: {response_counters['has_content']}"
+                                f"Responses w. Content: {response_counters['has_content']} | Paths in header: {response_counters['PathsInHeader']} | Paths in body: {response_counters['PathsInBody']} "
                             )                   
 
 
     # After scanning known paths, prepare for the next iteration
     if current_new_paths:
         print(f"Found {len(current_new_paths)} new path(s).")
-        new_paths = current_new_paths
-        all_paths.update(current_new_paths)
+        new_paths.update(current_new_paths)
     else:
         print("No new paths found, stopping.")
         break
