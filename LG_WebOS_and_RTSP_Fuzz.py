@@ -9,6 +9,7 @@ import itertools
 from collections import defaultdict
 import sys
 
+host = "192.168.2.9"
 ports = [18181, 3000, 7000, 7250, 36866, 3001, 1086, 1092]
 prefixes = ["", "/apps/"]
 faulty_paths = ["/major>", "/xml>", "/test", "/example", "/random", "/<invalid>", "/\\"]
@@ -126,7 +127,7 @@ while True:
                             max_feedback_length = max(max_feedback_length, len(feedback))
 
                             # Make the HTTP request or RTSP request
-                            response = make_request(protocol, "192.168.2.9", port, prefix, path, verb, auth)
+                            response = make_request(protocol, host, port, prefix, path, verb, auth)
 
                             # Update response counters based on the response
                             if response:
@@ -158,7 +159,7 @@ while True:
                                 f"Paths in header: {response_counters['PathsInHeader']} | "
                                 f"Paths in body: {response_counters['PathsInBody']} "
                             )
-            print(f"{feedback} {cfb}")
+                print(f"{feedback} {cfb}")
     # After scanning known paths, prepare for the next iteration
     if current_new_paths:
         print(f"Found {len(current_new_paths)} new path(s).")
