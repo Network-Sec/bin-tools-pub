@@ -161,6 +161,11 @@ while True:
                                 f"Paths in body: {response_counters['PathsInBody']} "
                             )
             print(f"{feedback} {cfb}")
+            print(f"Found {len(current_new_paths)} new path(s).")
+            new_paths.update(current_new_paths)
+            print("\n--- List of Paths ---")
+            for path in sorted(new_paths):
+                print(f"  {path}")
     # After scanning known paths, prepare for the next iteration
     if current_new_paths:
         print(f"Found {len(current_new_paths)} new path(s).")
@@ -171,7 +176,77 @@ while True:
 
 
 print("\n--- Final List of Paths ---")
-for path in sorted(all_paths):
+for path in sorted(new_paths):
     print(f"  {path}")
+
+"""
+Results like this:
+  Protocol: rtsp, Port: 3000, Prefix: /apps/, Path: /%4294967297e%4294967296e%2f, Verb: PLAY, Auth: None No Response: 210427 | Responses w. Status Code: 11012 | Responses w. Content: 5 | Responses w. Body: 5 | Paths in header: 15 | Paths in body: 130
+Found 29 new path(s).
+
+--- List of Paths ---
+  /1.0
+  /4.0.0
+  /SCPDURL
+  /UDN
+  /controlURL
+  /device
+  /deviceType
+  /eventSubURL
+  /friendlyName
+  /major
+  /manufacturer
+  /manufacturerURL
+  /minor
+  /modelDescription
+  /modelName
+  /modelURL
+  /root
+  /serialNumber
+  /service
+  /serviceId
+  /serviceList
+  /serviceType
+  /specVersion
+  /virtualService/3d358c04-790c-4fe4-9f67-1a6e6de6dbb3/control.xml
+  /virtualService/3d358c04-790c-4fe4-9f67-1a6e6de6dbb3/event.xml
+  /virtualService/3d358c04-790c-4fe4-9f67-1a6e6de6dbb3/scpd.xml
+  /wifiMac
+  /wiredMac
+  /xml;
+  Protocol: rtsp, Port: 7000, Prefix: /apps/, Path: /%4294967297e%4294967296e%2f, Verb: PLAY, Auth: None No Response: 210428 | Responses w. Status Code: 22083 | Responses w. Content: 5 | Responses w. Body: 5 | Paths in header: 15 | Paths in body: 130
+Found 29 new path(s).
+
+--- List of Paths ---
+  /1.0
+  /4.0.0
+  /SCPDURL
+  /UDN
+  /controlURL
+  /device
+  /deviceType
+  /eventSubURL
+  /friendlyName
+  /major
+  /manufacturer
+  /manufacturerURL
+  /minor
+  /modelDescription
+  /modelName
+  /modelURL
+  /root
+  /serialNumber
+  /service
+  /serviceId
+  /serviceList
+  /serviceType
+  /specVersion
+  /virtualService/3d358c04-790c-4fe4-9f67-1a6e6de6dbb3/control.xml
+  /virtualService/3d358c04-790c-4fe4-9f67-1a6e6de6dbb3/event.xml
+  /virtualService/3d358c04-790c-4fe4-9f67-1a6e6de6dbb3/scpd.xml
+  /wifiMac
+  /wiredMac
+  /xml;
+"""
 
 
