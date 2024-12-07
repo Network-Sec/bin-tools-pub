@@ -214,39 +214,6 @@ Found 29 new path(s).
   /wifiMac
   /wiredMac
   /xml;
-  Protocol: rtsp, Port: 7000, Prefix: /apps/, Path: /%4294967297e%4294967296e%2f, Verb: PLAY, Auth: None No Response: 210428 | Responses w. Status Code: 22083 | Responses w. Content: 5 | Responses w. Body: 5 | Paths in header: 15 | Paths in body: 130
-Found 29 new path(s).
-
---- List of Paths ---
-  /1.0
-  /4.0.0
-  /SCPDURL
-  /UDN
-  /controlURL
-  /device
-  /deviceType
-  /eventSubURL
-  /friendlyName
-  /major
-  /manufacturer
-  /manufacturerURL
-  /minor
-  /modelDescription
-  /modelName
-  /modelURL
-  /root
-  /serialNumber
-  /service
-  /serviceId
-  /serviceList
-  /serviceType
-  /specVersion
-  /virtualService/3d358c04-790c-4fe4-9f67-1a6e6de6dbb3/control.xml
-  /virtualService/3d358c04-790c-4fe4-9f67-1a6e6de6dbb3/event.xml
-  /virtualService/3d358c04-790c-4fe4-9f67-1a6e6de6dbb3/scpd.xml
-  /wifiMac
-  /wiredMac
-  /xml;
 """
 
 
