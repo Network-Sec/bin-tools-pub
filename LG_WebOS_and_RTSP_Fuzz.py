@@ -2,6 +2,7 @@
 # Initial commit, works but too slow / too broad
 # Improved speed, removed some verbs - adjust to target as needed
 # Adjusted output to run on Windows / Powershell (see commented sys.stdout) which doesn't support \r
+
 import socket
 import re
 import requests
@@ -132,21 +133,21 @@ while True:
                             # Update response counters based on the response
                             if response:
                                 response_counters["status_code"] += 1
-                                if response.headers or response.text:
+                                if hasattr(response, "headers") and (response.headers or response.text):
                                     response_counters["has_content"] += 1
 
-                                # Extract paths from headers if available
-                                if response.headers:
-                                    newpths = extract_paths(response.headers)  # Now handles CaseInsensitiveDict
-                                    response_counters['PathsInHeader'] += len(newpths)
-                                    current_new_paths.update(newpths)
+                                    # Extract paths from headers if available
+                                    if response.headers:
+                                        newpths = extract_paths(response.headers)  # Now handles CaseInsensitiveDict
+                                        response_counters['PathsInHeader'] += len(newpths)
+                                        current_new_paths.update(newpths)
 
-                                # Extract paths from the body if available
-                                if response.text:
-                                    response_counters['has_body'] += +1
-                                    newpths = extract_paths(response.text)  # Handles the body content
-                                    response_counters['PathsInBody'] += len(newpths)
-                                    current_new_paths.update(newpths)
+                                    # Extract paths from the body if available
+                                    if response.text:
+                                        response_counters['has_body'] += +1
+                                        newpths = extract_paths(response.text)  # Handles the body content
+                                        response_counters['PathsInBody'] += len(newpths)
+                                        current_new_paths.update(newpths)
 
                             else:
                                 response_counters["no_response"] += 1
@@ -159,7 +160,7 @@ while True:
                                 f"Paths in header: {response_counters['PathsInHeader']} | "
                                 f"Paths in body: {response_counters['PathsInBody']} "
                             )
-                print(f"{feedback} {cfb}")
+            print(f"{feedback} {cfb}")
     # After scanning known paths, prepare for the next iteration
     if current_new_paths:
         print(f"Found {len(current_new_paths)} new path(s).")
@@ -172,4 +173,5 @@ while True:
 print("\n--- Final List of Paths ---")
 for path in sorted(all_paths):
     print(f"  {path}")
+
 
