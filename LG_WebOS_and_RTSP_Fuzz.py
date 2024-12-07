@@ -156,7 +156,7 @@ while True:
                                 f"Paths in header: {response_counters['PathsInHeader']} | "
                                 f"Paths in body: {response_counters['PathsInBody']} "
                             )
-            print(f"\r{feedback}{' ' * padding} {cfb}")
+            print(f"{feedback}{' ' * padding} {cfb}")
     # After scanning known paths, prepare for the next iteration
     if current_new_paths:
         print(f"Found {len(current_new_paths)} new path(s).")
@@ -169,4 +169,3 @@ while True:
 print("\n--- Final List of Paths ---")
 for path in sorted(all_paths):
     print(f"  {path}")
-
