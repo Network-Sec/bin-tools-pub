@@ -2,16 +2,12 @@
 # Initial commit, works but too slow / too broad
 # Improved speed, removed some verbs - adjust to target as needed
 # Adjusted output to run on Windows / Powershell (see commented sys.stdout) which doesn't support \r
-
 import socket
 import re
 import requests
 import itertools
 from collections import defaultdict
 import sys
-from colorama import init, Fore
-
-init(autoreset=True)
 
 ports = [18181, 3000, 7000, 7250, 36866, 3001, 1086, 1092]
 prefixes = ["", "/apps/"]
@@ -24,6 +20,10 @@ auth_usernames = ["admin", "root", "webos", "lg", "lgadmin"]
 auth_passwords = ["1234", "admin", "root", "password", "12345", "webos", "lg", "lgadmin"]
 auth_combos = list(itertools.product(auth_usernames, auth_passwords))
 rtsp_methods = ["OPTIONS", "DESCRIBE", "SETUP", "PLAY"]
+req_templates = [
+    lambda method, i, port, auth: f"{method} rtsp://{host}:{port} RTSP/1.0\r\nCSeq: {i+1}\r\n{auth}\r\n\r\n".encode(),
+    lambda method, i, port, auth: f"{method} rtsp://{host}:{port} RTSP/1.0\r\nCSeq: {i+1}\r\n\r\n".encode()
+]
 
 def load_fuzz_paths(fuzz_file="fuzz.txt"):
     try:
@@ -98,6 +98,7 @@ response_counters = {key: 0 for key in response_counters}
 feedback = None
 padding = None
 cfb = None
+
 while True:
     iteration += 1
     print(f"--- Iteration {iteration} ---")
@@ -105,6 +106,7 @@ while True:
 
     # First, scan all known paths (initial + previously discovered)
     paths_to_scan = list(all_paths) if iteration == 1 else list(new_paths)
+    current_new_paths = set()
     for protocol in protocols:
         for port in ports:
             
@@ -116,7 +118,7 @@ while True:
                             feedback = f"  Protocol: {protocol}, Port: {port}, Prefix: {prefix}, Path: {path}, Verb: {verb}, Auth: {auth or 'None'}"
                             padding = max(0, max_feedback_length - len(feedback))
 
-                            cfb = f"{counter_feedback}{' ' * max_feedback_length}"
+                            cfb = f"{counter_feedback}" #{' ' * max_feedback_length}"
 
                             # Overwrite previous feedback line
                             #sys.stdout.write(f"\r{feedback}{' ' * padding} {cfb}", end="")
@@ -156,7 +158,7 @@ while True:
                                 f"Paths in header: {response_counters['PathsInHeader']} | "
                                 f"Paths in body: {response_counters['PathsInBody']} "
                             )
-            print(f"{feedback}{' ' * padding} {cfb}")
+            print(f"{feedback} {cfb}")
     # After scanning known paths, prepare for the next iteration
     if current_new_paths:
         print(f"Found {len(current_new_paths)} new path(s).")
@@ -169,3 +171,4 @@ while True:
 print("\n--- Final List of Paths ---")
 for path in sorted(all_paths):
     print(f"  {path}")
+
