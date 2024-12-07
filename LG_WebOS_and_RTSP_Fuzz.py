@@ -116,7 +116,7 @@ while True:
                             feedback = f"  Protocol: {protocol}, Port: {port}, Prefix: {prefix}, Path: {path}, Verb: {verb}, Auth: {auth or 'None'}"
                             padding = max(0, max_feedback_length - len(feedback))
 
-                            cfb = f"{counter_feedback}{' ' * max_feedback_length}\r"
+                            cfb = f"{counter_feedback}{' ' * max_feedback_length}"
 
                             # Overwrite previous feedback line
                             #sys.stdout.write(f"\r{feedback}{' ' * padding} {cfb}", end="")
@@ -169,3 +169,4 @@ while True:
 print("\n--- Final List of Paths ---")
 for path in sorted(all_paths):
     print(f"  {path}")
+
