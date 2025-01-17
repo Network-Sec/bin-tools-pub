@@ -10,4 +10,4 @@ then
 fi
 
 # Edit the first number or the range start / end of each block
-parallel 'echo 123.{1}.{2}.{3}; dig -x $(echo 92.{1}.{2}.{3}) @{4}  +short | tee -a /mnt/d/IP_Ranges/vodafon_residential_92_116.txt ' ::: $(seq 1 255) ::: $(seq 1 255) ::: $(seq 1 255) :::+ $(cat ./public_dns_servers.txt)
+parallel 'echo 123.{1}.{2}.{3}; dig -x $(echo 123.{1}.{2}.{3}) @{4}  +short | tee -a /mnt/d/IP_Ranges/vodafon_residential_92_116.txt ' ::: $(seq 1 255) ::: $(seq 1 255) ::: $(seq 1 255) :::+ $(cat ./public_dns_servers.txt)
