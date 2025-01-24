@@ -87,12 +87,6 @@ def update_or_add_entry(record):
 
     dbentries = list(collection.find(query))
 
-    if not len(dbentries):
-        # Stage 2: Match by SSID
-        print("BSSID not found...")
-        query = {"essid": ssid}
-        dbentries = list(collection.find(query).limit(100))
-
     if dbentries:
         print("Found DB entries", len(dbentries))
     else:
@@ -120,6 +114,8 @@ def update_or_add_entry(record):
             if mac:
                 merged_bssid = merge_arrays(dbentry.get("bssid", []), mac)
                 updates["bssid"] = list(set(merged_bssid))
+                if len(updates["bssid"]) > 5:
+                    updates["bssid"] = updates["bssid"][:5]
             if ssid:
                 merged_essid = merge_arrays(dbentry.get("essid", []), ssid)
                 updates["essid"] = list(set(merged_essid))
@@ -158,9 +154,21 @@ def update_or_add_entry(record):
                         conflicting_address[key] = dbentry[key]
 
                 # If there are conflicts, add existing address to other_locations
-                if conflicting_address:
+                if conflicting_address and not conflicting_address in other_locations:
                     other_locations.append(conflicting_address)
                     updates["other_locations"] = other_locations
+
+                if updates.get("other_locations") and type(updates["other_locations"]) == list:
+                    uniq_locs = []
+                    for loc in updates["other_locations"]:
+                        if not loc in uniq_locs:
+                            uniq_locs.append(loc)
+                    
+                    if len(uniq_locs):
+                        updates["other_locations"] = uniq_locs
+
+                    if len(updates["other_locations"]) > 100:
+                        updates["other_locations"] = updates["other_locations"][:100]
 
                 # Overwrite dbentry address items with new values
                 updates.update(address_keys_to_update)
