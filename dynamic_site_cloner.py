@@ -51,24 +51,20 @@ def file_exists(file_path, content=None):
         return existing_hash == new_hash
     return True
 
-def rewrite_file_paths(file_path, old_url, new_url):
-    """Rewrites URLs in local files."""
-    with open(file_path, 'r+', encoding='utf-8') as f:
-        content = f.read()
-        new_content = content.replace(old_url, new_url)
-        if content != new_content:
-            f.seek(0)
-            f.write(new_content)
-            f.truncate()
-            print(f"Rewritten in {file_path}: {old_url} -> {new_url}")
-
-def rewrite_html_css_links():
-    """Find and replace STATIC_URL references in HTML and CSS files."""
+def rewrite_file_paths(old_url, new_url):
+    """Rewrites URLs in local HTML and CSS files."""
     for dirpath, _, filenames in os.walk(BASE_DIR):
         for filename in filenames:
             if filename.endswith(('.html', '.css')):
                 file_path = os.path.join(dirpath, filename)
-                rewrite_file_paths(file_path, STATIC_URL, '')
+                with open(file_path, 'r+', encoding='utf-8') as f:
+                    content = f.read()
+                    new_content = content.replace(old_url, new_url)
+                    if content != new_content:
+                        f.seek(0)
+                        f.write(new_content)
+                        f.truncate()
+                        print(f"Rewritten in {file_path}: {old_url} -> {new_url}")
 
 # Custom HTTP Server
 class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
@@ -90,15 +86,20 @@ class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
 
     def download_file(self, url, local_path):
         try:
+            filename = os.path.basename(urlparse(url).path)
+            if not filename or filename.endswith('.mp4'):
+                return  # Skip MP4 files
+            
             req = urllib.request.Request(url)
             req.add_header("Cookie", COOKIES)
             req.add_header("User-Agent", "Mozilla/5.0")
             response = urllib.request.urlopen(req)
-            content = response.read()
             
-            filename = os.path.basename(urlparse(url).path)
-            if not filename:
-                return
+            if response.getcode() not in [200]:
+                print(f"Skipping {url} - HTTP {response.getcode()}")
+                return  # Skip if response is not OK
+
+            content = response.read()
             
             if 'application/javascript' in response.info().get_content_type() or filename.endswith('.js'):
                 file_path = os.path.join(JS_DIR, filename)
@@ -115,10 +116,12 @@ class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
                 with open(file_path, 'wb') as f:
                     f.write(content)
                 print(f"Downloaded: {file_path}")
-                rewrite_html_css_links()
-
+                rewrite_file_paths(url, f"/{os.path.relpath(file_path, BASE_DIR)}")
+        
+        except urllib.error.HTTPError as e:
+            print(f"Error downloading {url}: HTTP {e.code}")
         except Exception as e:
-            self.log_error(f"Error downloading {url}: {str(e)}")
+            print(f"Error downloading {url}: {str(e)}")
 
 def run(server_class=HTTPServer, handler_class=CustomHTTPRequestHandler, port=9095):
     os.chdir(BASE_DIR)  # Ensure server serves from the correct directory
