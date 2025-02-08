@@ -14,6 +14,13 @@
 # - Open localhost:9095 in browser, watch the script work - when it stops, reload
 # - Handling of fonts isn't ideal yet
 # - svg may cause issues, as well as embedded data
+# - For subpages, visit a subpage like /service/datastream (on the real site), click view source
+# - mkdir service, nano service/datastream.html, paste source
+# - run script again in root dir, visit localhost:9095/service/datastream.html - once finished, reload
+# - repeat for more subpages
+
+# It involves a bit of manual work, but you get a pretty good copy - I would hope to further automate these manual
+# steps, but atm it's good enough for me, I can clone almost perfect, complex, js-heavy sites in 30min.
 
 import os
 import re
