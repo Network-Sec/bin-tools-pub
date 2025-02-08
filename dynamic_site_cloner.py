@@ -8,6 +8,10 @@
 # well and a lot better than other tools. 
 
 # - You may need to add custom headers, cookies, etc. so the site will load and work
+# - You need to start by creating a dir (/websites/mysite), copy this script into the dir
+# - Ooen the page in browser, copy source and save it as index.html into the dir
+# - Start the script
+# - Open localhost:9095 in browser, watch the script work - when it stops, reload
 # - Handling of fonts isn't ideal yet
 # - svg may cause issues, as well as embedded data
 
