@@ -156,7 +156,7 @@ class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
                             # Create the STATIC_URL version of the URL
                             static_url_version = STATIC_URL + url
                             print(f"Seeking static: {static_url_version}")
-                            new_content = new_content.replace(static_url_version, replacement_path)
+                            new_content = content.replace(static_url_version, replacement_path)
                         print(f"Seeking unmodified: {org_url}")
                         new_content = content.replace(org_url, replacement_path)
 
