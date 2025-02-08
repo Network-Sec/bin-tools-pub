@@ -100,7 +100,7 @@ class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
                     return
                 with open(file_path, 'wb') as f:
                     f.write(content)
-
+                
 
             elif 'text/css' in content_type or filename.endswith('css'):
                 # Save CSS files
@@ -111,7 +111,7 @@ class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
                     return
                 with open(file_path, 'wb') as f:
                     f.write(content)
-
+                
 
             elif content_type.startswith('image/') or filename.endswith('svg') or filename.endswith('jpg') or filename.endswith('png') or filename.endswith('jpeg') or filename.endswith('gif') or filename.endswith('webp') or filename.endswith('gif'):
                 file_path = os.path.join(BASE_DIR, 'img', filename)
@@ -121,7 +121,7 @@ class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
                     return
                 with open(file_path, 'wb') as f:
                     f.write(content)
-
+                
             elif path.endswith('/'):
                 print(f"Subpage download url: {url} path: {path}")
                 self.download_subpage(url, path)
@@ -187,7 +187,7 @@ class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
                             # Create the STATIC_URL version of the URL
                             static_url_version = STATIC_URL + url
                             print(f"Seeking static: {static_url_version}")
-                            new_content = new_content.replace(static_url_version, replacement_path)
+                            new_content = content.replace(static_url_version, replacement_path)
                         print(f"Seeking unmodified: {org_url}")
                         new_content = content.replace(org_url, replacement_path)
 
@@ -202,7 +202,7 @@ class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
             # Ensure path ends with '/'
             if not path.endswith('/'):
                 path += '/'
-
+            
             # Create directory structure for the subpage
             local_dir = os.path.join(BASE_DIR, path.lstrip('/'))
             os.makedirs(local_dir, exist_ok=True)
@@ -210,7 +210,7 @@ class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
             # Determine filename (index.html for subpages)
             file_path = os.path.join(local_dir, "index.html")
             print(f"Saving subpage to: {file_path}")
-
+            
             # Download and save the HTML file
             req = urllib.request.Request(url)
             cookie_header = COOKIES
@@ -223,10 +223,10 @@ class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
             req.add_header("Upgrade-Insecure-Requests", "1")
             response = urllib.request.urlopen(req)
             content = response.read().decode('utf-8')  # Assuming HTML is utf-8
-
+            
             # Rewrite STATIC_URL in the downloaded content
             content = content.replace(STATIC_URL, "")
-
+            
             # Save the modified content to index.html
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(content)
@@ -242,15 +242,15 @@ class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
         try:
             with open(file_path, 'r+', encoding='utf-8') as f:
                 content = f.read()
-
+                
                 # Replace '/subpage/' with '/subpage/index.html'
                 if path.endswith('/'):
                     new_path = path + 'index.html'
                 else:
                     new_path = path + '/index.html'
-
+                
                 content = content.replace(f"{path}", new_path)
-
+                
                 # Write the updated content back to the file
                 f.seek(0)
                 f.write(content)
