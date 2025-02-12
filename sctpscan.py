@@ -9,12 +9,17 @@ import select
 import resource
 from IPy import IP
 
-# Define default ports to scan
-SCTP_PORTS = [2905, 2910, 3868]  # SCTP ports for SS7
-UDP_PORTS = [5060, 5061, 2427, 2727]  # UDP ports for SIP and SIGTRAN
-TCP_PORTS = [2905, 2910, 3868, 5060, 5061]  # TCP ports for SS7 and SIP
+# Define all ports to scan
+PORTS = [2905, 2910, 3868, 5060, 5061, 2427, 2727]  # Common ports for SCTP, UDP, and TCP
 DEFAULT_PORT = 2905  # Default SCTP binding port
-_VERBOSE = False
+
+# SIP methods to test
+SIP_METHODS = [
+    "OPTIONS",  # Queries supported methods
+    "REGISTER", # Tests registration capability
+    "INVITE",   # Checks call initiation
+    "INFO"      # May return detailed server information
+]
 
 def bind_socket(soc, port):
     """Bind the socket to a specific port."""
@@ -29,32 +34,47 @@ def bind_socket(soc, port):
             port = DEFAULT_PORT
             continue
 
-def grab_banner(sock, protocol):
+def generate_sip_request(method, target_ip, target_port):
+    """Generate a SIP request for the given method."""
+    return (f"{method} sip:{target_ip}:{target_port} SIP/2.0\r\n"
+            f"Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK-524287-1---abc\r\n"
+            f"Max-Forwards: 70\r\n"
+            f"To: <sip:{target_ip}:{target_port}>\r\n"
+            f"From: <sip:apit@test.com>;tag=xyz123\r\n"
+            f"Call-ID: 123456789@apitest.com\r\n"
+            f"CSeq: 1 {method}\r\n"
+            f"Content-Length: 0\r\n\r\n").encode()
+
+def grab_banner(sock, protocol, port, target_ip):
     """Grab banner from an open socket."""
+
+    banner = None
+    for method in SIP_METHODS:
+        try:
+            request = generate_sip_request(method, target_ip, port)
+            sock.send(request)
+            banner = sock.recv(4096)
+        except:
+            pass
+        if banner:
+            print(f"SIP {method} Response from {target_ip}:{port}:")
+            print(banner.decode(errors="ignore").strip())
+            print("-" * 40)
+            banner = None
+
     try:
-        if protocol == "tcp":
+        if protocol == "tcp":  # Generic TCP banner grabbing
             sock.send(b"GET / HTTP/1.1\r\nHost: example.com\r\n\r\n")
-        elif protocol == "udp":
+            banner = sock.recv(4096)
+            return banner.decode(errors="ignore").strip()
+        elif protocol == "udp":  # Generic UDP banner grabbing
             sock.send(b"OPTIONS sip:example.com SIP/2.0\r\n\r\n")
-        
-        banner = sock.recv(1024)
-        return banner.decode(errors="ignore").strip()
+            banner = sock.recv(4096)
+            return banner.decode(errors="ignore").strip()
     except Exception as e:
         return f"Error: {e}"
 
-def validate_sctp(ip, port):
-    """Attempt an SCTP INIT to check if the service responds."""
-    try:
-        sock = sctp.sctpsocket_tcp(socket.AF_INET)
-        sock.settimeout(3)
-        sock.connect((ip, port))
-        print(f"SCTP INIT successful on {ip}:{port}")
-        sock.close()
-    except Exception as e:
-        if _VERBOSE:
-            print(f"SCTP INIT failed on {ip}:{port} - {e}")
-
-def scan_ports(ip, ports, protocol="sctp", timeout=3):
+def scan_ports(ip, ports, protocol, timeout=3):
     """Scan ports and attempt to grab banners if open."""
     socket_list = []
     opened = closed = filtered = 0
@@ -89,12 +109,9 @@ def scan_ports(ip, ports, protocol="sctp", timeout=3):
                 try:
                     soc.getpeername()
                     print(f"{protocol.upper()} Port Open: {ip}:{port}")
-                    
-                    validate_sctp(ip.strNormal(), port)
-                    if protocol != "sctp":
-                        banner = grab_banner(soc, protocol)
-                        if not banner.startswith('Error:'):
-                            print(f"Banner: {banner}")
+                    banner = grab_banner(soc, protocol, port, ip.strNormal()) if protocol in ["sctp", "tcp", "udp"] else "Error:"
+                    if not banner.startswith('Error:'):
+                        print(f"Banner: {banner}")
                     opened += 1
                 except socket.error:
                     closed += 1
@@ -114,14 +131,12 @@ def main(iprange, quiet=False):
     for ip in IP(iprange):
         print(f"Scanning {ip}")
 
-        # Scan ports
-        scan_ports(ip, SCTP_PORTS, protocol="sctp")
-        scan_ports(ip, UDP_PORTS, protocol="udp")
-        scan_ports(ip, TCP_PORTS, protocol="tcp")
+        # Scan all ports with all protocols
+        for protocol in ["sctp", "udp", "tcp"]:
+            scan_ports(ip, PORTS, protocol)
 
         if not quiet:
             print("Running additional checks (Nmap, Hydra, etc.)...")
-            # Example: Run Nmap scan (requires Nmap installed)
             try:
                 import nmap
                 nm = nmap.PortScanner()
