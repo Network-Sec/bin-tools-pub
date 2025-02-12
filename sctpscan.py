@@ -12,7 +12,9 @@ from IPy import IP
 # Define default ports to scan
 SCTP_PORTS = [2905, 2910, 3868]  # SCTP ports for SS7
 UDP_PORTS = [5060, 5061, 2427, 2727]  # UDP ports for SIP and SIGTRAN
-DEFAULT_PORT = 2905  # Default port for binding
+TCP_PORTS = [2905, 2910, 3868, 5060, 5061]  # TCP ports for SS7 and SIP
+DEFAULT_PORT = 2905  # Default SCTP binding port
+_VERBOSE = False
 
 def bind_socket(soc, port):
     """Bind the socket to a specific port."""
@@ -27,65 +29,95 @@ def bind_socket(soc, port):
             port = DEFAULT_PORT
             continue
 
+def grab_banner(sock, protocol):
+    """Grab banner from an open socket."""
+    try:
+        if protocol == "tcp":
+            sock.send(b"GET / HTTP/1.1\r\nHost: example.com\r\n\r\n")
+        elif protocol == "udp":
+            sock.send(b"OPTIONS sip:example.com SIP/2.0\r\n\r\n")
+        
+        banner = sock.recv(1024)
+        return banner.decode(errors="ignore").strip()
+    except Exception as e:
+        return f"Error: {e}"
+
+def validate_sctp(ip, port):
+    """Attempt an SCTP INIT to check if the service responds."""
+    try:
+        sock = sctp.sctpsocket_tcp(socket.AF_INET)
+        sock.settimeout(3)
+        sock.connect((ip, port))
+        print(f"SCTP INIT successful on {ip}:{port}")
+        sock.close()
+    except Exception as e:
+        if _VERBOSE:
+            print(f"SCTP INIT failed on {ip}:{port} - {e}")
+
 def scan_ports(ip, ports, protocol="sctp", timeout=3):
-    """Scan ports on a given IP using the specified protocol."""
+    """Scan ports and attempt to grab banners if open."""
     socket_list = []
     opened = closed = filtered = 0
-
+    
     for port in ports:
         if protocol == "sctp":
             soc = sctp.sctpsocket_tcp(socket.AF_INET)
         elif protocol == "udp":
             soc = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        elif protocol == "tcp":
+            soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         else:
-            raise ValueError("Unsupported protocol. Use 'sctp' or 'udp'.")
-
-        if ip.strNormal().split('.')[0] != '127':
-            try:
-                bind_socket(soc, port)
-            except socket.error as e:
-                print(f"Cannot bind to default port {DEFAULT_PORT}, using kernel-attributed source port.")
+            raise ValueError("Unsupported protocol. Use 'sctp', 'udp', or 'tcp'.")
 
         soc.settimeout(timeout)
         soc.setblocking(False)
+        
         try:
             soc.connect((ip.strNormal(), port))
         except socket.error:
             pass
-        socket_list.append(soc)
-
+        
+        socket_list.append((soc, port))
+    
     while True:
-        rlist, wlist, xlist = select.select([], socket_list, [], 1)
-        if not rlist and not wlist and not xlist:
+        rlist, wlist, xlist = select.select([], [s[0] for s in socket_list], [], 1)
+        if not wlist:
             break
-        for soc in wlist:
-            try:
-                name = soc.getpeername()
-                print(f"{protocol.upper()} Port Open: {name[0]}:{name[1]}")
-                opened += 1
-            except socket.error:
-                closed += 1
-            soc.close()
-            socket_list.remove(soc)
-
-    for soc in socket_list:
+        
+        for soc, port in socket_list:
+            if soc in wlist:
+                try:
+                    soc.getpeername()
+                    print(f"{protocol.upper()} Port Open: {ip}:{port}")
+                    
+                    validate_sctp(ip.strNormal(), port)
+                    if protocol != "sctp":
+                        banner = grab_banner(soc, protocol)
+                        if not banner.startswith('Error:'):
+                            print(f"Banner: {banner}")
+                    opened += 1
+                except socket.error:
+                    closed += 1
+                soc.close()
+                socket_list.remove((soc, port))
+    
+    for soc, port in socket_list:
         filtered += 1
         soc.close()
-
+    
     print(f"Results for {protocol.upper()}: {opened} opened, {closed} closed, {filtered} filtered")
 
 def main(iprange, quiet=False):
-    """Scan SCTP and UDP ports on a given IP range."""
+    """Scan SCTP, UDP, and TCP ports on a given IP range."""
     resource.setrlimit(resource.RLIMIT_NOFILE, (4096, 4096))
 
     for ip in IP(iprange):
         print(f"Scanning {ip}")
 
-        # Scan SCTP ports
+        # Scan ports
         scan_ports(ip, SCTP_PORTS, protocol="sctp")
-
-        # Scan UDP ports
         scan_ports(ip, UDP_PORTS, protocol="udp")
+        scan_ports(ip, TCP_PORTS, protocol="tcp")
 
         if not quiet:
             print("Running additional checks (Nmap, Hydra, etc.)...")
@@ -105,7 +137,7 @@ def main(iprange, quiet=False):
                 print("Nmap module not installed. Skipping Nmap scan.")
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Scan SCTP and UDP ports for SS7 and SIP vulnerabilities.")
+    parser = argparse.ArgumentParser(description="Scan SCTP, UDP, and TCP ports for SS7 and SIP vulnerabilities.")
     parser.add_argument("iprange", help="IP range to scan (e.g., 192.168.1.0/24)")
     parser.add_argument("--quiet", action="store_true", help="Exclude offensive scans (e.g., Nmap, Hydra).")
     args = parser.parse_args()
