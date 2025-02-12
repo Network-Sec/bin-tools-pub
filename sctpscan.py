@@ -40,8 +40,8 @@ def generate_sip_request(method, target_ip, target_port):
             f"Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK-524287-1---abc\r\n"
             f"Max-Forwards: 70\r\n"
             f"To: <sip:{target_ip}:{target_port}>\r\n"
-            f"From: <sip:apit@test.com>;tag=xyz123\r\n"
-            f"Call-ID: 123456789@apitest.com\r\n"
+            f"From: <sip:exampe@example.com>;tag=xyz123\r\n"
+            f"Call-ID: 123456789@example.com\r\n"
             f"CSeq: 1 {method}\r\n"
             f"Content-Length: 0\r\n\r\n").encode()
 
