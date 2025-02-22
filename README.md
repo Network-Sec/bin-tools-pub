@@ -212,7 +212,8 @@ fuzzlib.py - encoding and fuzzing toolkit
 - Both lib and fuzzer below are made async for best performance
 
 ### Usage Example
-![Fuzzlib Video Demo](https://network-sec.de/videos/projects/fuzzlib.py_demo_on_WebsecurityAcademy.mp4)
+[![fuzzlib_video_demo](https://github.com/user-attachments/assets/146997aa-38b1-45f6-8889-1410a6080339)](https://network-sec.de/videos/projects/fuzzlib.py_demo_on_WebsecurityAcademy.mp4)
+
 
 You should import this as a lib and could then utilize individual functions, or call
 ```python
