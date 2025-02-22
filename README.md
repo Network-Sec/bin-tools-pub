@@ -212,6 +212,8 @@ fuzzlib.py - encoding and fuzzing toolkit
 - Both lib and fuzzer below are made async for best performance
 
 ### Usage Example
+<video width="1920" height="1080" loop="" controls=""><source src="videos/projects/fuzzlib.py_demo_on_WebsecurityAcademy.mp4" type="video/mp4">Your browser does not support the video tag.</video>
+
 You should import this as a lib and could then utilize individual functions, or call
 ```python
 encode_all_formats('"><svg onload=myXSStest>...')
