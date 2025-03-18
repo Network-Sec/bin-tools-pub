@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Once upon a time...  read it up, if you care. DIG and Phonenrs used to be a thing, at least in some peoples imagination. We tried to scrape together
-# what's left of the idea, will not work very often
+# Once upon a time...  read it up, if you care. DIG and Phonenrs used to be a thing, at least in somebody's imagination. 
+# We tried to scrape together, what's left of the idea. Won't work very often or for most numbers
 
 # Function to reverse a string and add dots
 reverse_and_add_dots() {
