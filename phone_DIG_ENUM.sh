@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Once upon a time...  read it up, if you care. DIG and Phonenrs used to be a thing, at least in somebody's imagination. 
+# Once upon a time...  read it up, if you care. DIG and Phone-Numbers used to be a thing, at least in somebody's imagination. 
 
 ### This is the official E.164 ENUM DNS structure as defined by the ITU (International Telecommunication Union) and managed by various ENUM registries. ###
 ### 9.8.7.6.5.4.3.2.1.4.4.e164.arpa ###
