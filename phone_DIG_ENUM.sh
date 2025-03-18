@@ -21,6 +21,7 @@ fi
 
 # List of ENUM servers (IPs & domains for redundancy)
 enum_servers=(
+    "9.9.9.9"
     "185.124.68.123"
     "185.124.68.124"
     "enum.opentelecoms.net"
